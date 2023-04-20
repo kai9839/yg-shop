@@ -21,7 +21,7 @@ instance.interceptors.request.use(config => {
 instance.interceptors.response.use(res => res.data, err => {
   if (err.response && err.response.status === 401) {
     store.commit('user/setUser', {})
-    const fullPath = encodeURIComponent(router.currentRoute.ref.fullPath)
+    const fullPath = encodeURIComponent(router.currentRoute.value.fullPath)
     router.push('/login?redirectUrl=' + fullPath)
   }
   return Promise.reject(err)
