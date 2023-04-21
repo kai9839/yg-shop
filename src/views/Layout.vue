@@ -8,12 +8,17 @@
 </template>
 
 <script>
+import { useStore } from 'vuex'
 import AppTopnav from '@/components/app-topnav'
 import AppHeader from '@/components/app-header.vue'
 import AppFooter from '@/components/app-footer.vue'
 export default {
   name: 'Layout',
-  components: { AppTopnav, AppHeader, AppFooter }
+  components: { AppTopnav, AppHeader, AppFooter },
+  setup () {
+    const store = useStore()
+    store.dispatch('category/getList')
+  }
 }
 </script>
 
