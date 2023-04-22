@@ -1,15 +1,15 @@
 <template>
   <ul class="app-header-nav">
     <li class="home"><RouterLink to="/">首页</RouterLink></li>
-    <li v-for="item in list" :key="item.id">
-      <router-link to="/">{{item.name}}</router-link>
-      <div class="layer">
+    <li v-for="item in list" :key="item.id" @mouseenter="show(item)" @mouseleave="hide(item)">
+      <router-link @click="hide(item)" :to="`/category/${item.id}`">{{item.name}}</router-link>
+      <div class="layer" :class="{open: item.open}">
         <ul>
-          <li v-for="i in 10" :key="i">
-            <a href="#">
-              <img src="http://zhoushugang.gitee.io/erabbit-client-pc-static/uploads/img/category%20(4).png" alt="">
-              <p>果干</p>
-            </a>
+          <li v-for="sub in item.children" :key="sub.id">
+            <RouterLink @click="hide(item)" :to="`/category/sub/${sub.id}`">
+              <img :src="sub.picture" alt="">
+              <p>{{ sub.name }}</p>
+            </RouterLink>
           </li>
         </ul>
       </div>
@@ -27,7 +27,13 @@ export default {
     const list = computed(() => {
       return store.state.category.list
     })
-    return { list }
+    const show = (item) => {
+      store.commit('category/show', item.id)
+    }
+    const hide = (item) => {
+      store.commit('category/hide', item.id)
+    }
+    return { list, show, hide }
   }
 }
 </script>
@@ -55,14 +61,14 @@ export default {
         color: @xtxColor;
         border-bottom: 1px solid @xtxColor;
       }
-      > .layer {
-        height: 132px;
-        opacity: 1;
-      }
     }
   }
 }
 .layer {
+  &.open {
+      height: 132px;
+      opacity: 1;
+  }
   width: 1240px;
   background-color: #fff;
   position: absolute;

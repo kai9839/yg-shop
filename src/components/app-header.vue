@@ -41,29 +41,6 @@ export default {
       background: url(../assets/images/logo.png) no-repeat center 18px / contain;
     }
   }
-  .navs {
-    width: 820px;
-    display: flex;
-    justify-content: space-around;
-    padding-left: 40px;
-    li {
-      margin-right: 40px;
-      width: 38px;
-      text-align: center;
-      a {
-        font-size: 16px;
-        line-height: 32px;
-        height: 32px;
-        display: inline-block;
-      }
-      &:hover {
-        a {
-          color: @xtxColor;
-          border-bottom: 1px solid @xtxColor;
-        }
-      }
-    }
-  }
   .search {
     width: 170px;
     height: 32px;
