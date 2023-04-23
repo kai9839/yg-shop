@@ -1,6 +1,7 @@
 <template>
   <AppTopnav>顶部组件</AppTopnav>
   <AppHeader>头部组件</AppHeader>
+  <!-- 吸顶 -->
   <AppHeaderSticky></AppHeaderSticky>
   <div class="app-body">
     <router-view></router-view>
