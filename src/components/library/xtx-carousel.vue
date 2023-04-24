@@ -40,15 +40,13 @@ export default {
       type: Array,
       default: () => []
     },
-    // 是否自动轮播
-    autoPlay: {
-      type: Boolean,
-      default: false
-    },
-    // 间隔时长
     duration: {
       type: Number,
       default: 3000
+    },
+    autoPlay: {
+      type: Boolean,
+      default: false
     }
   },
   setup (props) {
@@ -74,8 +72,7 @@ export default {
         autoPlayFn()
       }
     }, { immediate: true })
-
-    // 2. 鼠标进入暂停  离开开启自动播放（有开启条件）
+    // 鼠标进入停止，移出开启自动，前提条件：autoPlay为true
     const stop = () => {
       if (timer) clearInterval(timer)
     }
@@ -107,7 +104,6 @@ export default {
     onUnmounted(() => {
       clearInterval(timer)
     })
-
     return { index, stop, start, toggle }
   }
 }
