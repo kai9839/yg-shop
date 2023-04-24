@@ -2,7 +2,7 @@
   <div class='home-category' @mouseleave="categoryId=null">
     <ul class="menu">
       <!-- 一级分类 -->
-      <li :class="{active:category===item.id}" v-for="item in menuList" :key="item.id" @mouseenter="categoryId=item.id">
+      <li :class="{active:categoryId&&categoryId===item.id}" v-for="item in menuList" :key="item.id" @mouseenter="categoryId=item.id">
         <RouterLink :to="`/category/${item.id}`">{{item.name}}</RouterLink>
         <template v-if="item.children">
           <!-- 二级分类 -->
@@ -55,9 +55,7 @@
 import { computed, reactive, ref } from 'vue'
 import { useStore } from 'vuex'
 import { findBrand } from '@/api/home'
-import xtxSkeleton from '@/components/library/xtx-skeleton.vue'
 export default {
-  components: { xtxSkeleton },
   name: 'HomeCategory',
   setup () {
     const brand = reactive({
@@ -114,17 +112,6 @@ export default {
         color: #fff;
         &:first-child {
           font-size: 16px;
-        }
-      }
-      .xtx-skeleton {
-        animation: fade 1s linear infinite alternate;
-      }
-      @keyframes fade {
-        from{
-          opacity: 0.2;
-        }
-        to {
-          opacity: 1;
         }
       }
     }
@@ -220,6 +207,18 @@ export default {
     .layer {
       display: block;
     }
+  }
+}
+// 骨架动画
+.xtx-skeleton {
+  animation: fade 1s linear infinite alternate;
+}
+@keyframes fade {
+  from {
+    opacity: 0.2;
+  }
+  to {
+    opacity: 1;
   }
 }
 </style>
