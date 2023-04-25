@@ -3,8 +3,10 @@
     <div class="container">
       <div class="head">
         <h3>{{ title }}<small>{{ subTitle }}</small></h3>
+        <!-- 右上角插槽 -->
         <slot name="right" />
       </div>
+      <!-- 默认插槽，面板内容 -->
       <slot />
     </div>
   </div>
