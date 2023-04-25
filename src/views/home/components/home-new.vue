@@ -21,19 +21,29 @@
   </div>
 </template>
 <script>
-import { ref } from 'vue'
 import HomePanel from './home-panel'
 import HomeSkeleton from './home-skeleton.vue'
 import { findNew } from '@/api/home'
+import { useLazyData } from '@/hooks'
 export default {
   name: 'HomeNew',
   components: { HomePanel, HomeSkeleton },
   setup () {
-    const goods = ref([])
-    findNew().then(data => {
-      goods.value = data.result
-    })
-    return { goods }
+    // const goods = ref([])
+    // const box = ref(null)
+    // const { stop } = useIntersectionObserver(
+    //   box,
+    //   ([{ isIntersecting }]) => {
+    //     if (isIntersecting) {
+    //       stop()
+    //       findNew().then(data => {
+    //         goods.value = data.result
+    //       })
+    //     }
+    //   }
+    // )
+    const { target, result } = useLazyData(findNew)
+    return { goods: result, target }
   }
 }
 </script>
