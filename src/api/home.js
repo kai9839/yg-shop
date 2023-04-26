@@ -28,3 +28,10 @@ export const findNew = () => {
 export const findHot = () => {
   return request('home/hot', 'get')
 }
+/**
+ * 获取商品
+ * @returns Promise
+ */
+export const findGoods = () => {
+  return request('home/goods', 'get')
+}

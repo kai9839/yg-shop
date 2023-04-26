@@ -97,5 +97,15 @@ export default {
       }
     }
   }
+  .skeleton {
+    width: 100%;
+    display: flex;
+    .item {
+      margin-right: 10px;
+      &:nth-child(5n) {
+        margin-right: 0;
+      }
+    }
+  }
 }
 </style>
