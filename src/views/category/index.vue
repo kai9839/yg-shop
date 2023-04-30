@@ -74,7 +74,10 @@ export default {
       })
     }
     watch(() => route.params.id, (newVal) => {
-      newVal && getSubList()
+      // 下面会出现点击二级类目时，也会触发id发生变化而发送请求
+      // newVal && getSubList()
+      // newVal && getSubList() 加上一个严谨判断，在顶级类名下才发请求
+      if (newVal && `/category/${newVal}` === route.path) getSubList()
     }, { immediate: true })
     return { sliders, topCategory, subList }
   }
