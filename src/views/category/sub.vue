@@ -5,8 +5,6 @@
       <SubBread />
       <!-- 筛选区 -->
       <SubFilter />
-      <!-- 复选框 -->
-      <xtx-checkbox>全选</xtx-checkbox>
     </div>
   </div>
 </template>
