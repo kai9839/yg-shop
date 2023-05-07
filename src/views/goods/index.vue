@@ -11,7 +11,7 @@
       <!-- 商品信息 -->
       <div class="goods-info">
         <div class="media">
-          <GoodsImage :images="goods.mainPictures" />
+          <GoodsImage v-if="goods" :images="goods.mainPictures" />
         </div>
         <div class="spec"></div>
       </div>
