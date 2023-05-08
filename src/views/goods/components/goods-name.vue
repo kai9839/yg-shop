@@ -13,6 +13,7 @@
     <dl>
       <dt>配送</dt>
       <dd>至 </dd>
+      <xtx-city />
     </dl>
     <dl>
       <dt>服务</dt>

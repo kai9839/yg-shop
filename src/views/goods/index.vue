@@ -1,17 +1,17 @@
 <template>
-  <div class='xtx-goods-page'>
+  <div class='xtx-goods-page' v-if="goods">
     <div class="container">
       <!-- 面包屑 -->
       <XtxBread>
         <XtxBreadItem to="/">首页</XtxBreadItem>
-        <XtxBreadItem v-if="goods" :to="`/category/${goods.categories[1].id}`">{{goods.categories[1].name}}</XtxBreadItem>
-        <XtxBreadItem v-if="goods" :to="`/category/sub/${goods.categories[0].id}`">{{goods.categories[0].name}}</XtxBreadItem>
-        <XtxBreadItem v-if="goods">{{goods.name}}</XtxBreadItem>
+        <XtxBreadItem  :to="`/category/${goods.categories[1].id}`">{{goods.categories[1].name}}</XtxBreadItem>
+        <XtxBreadItem  :to="`/category/sub/${goods.categories[0].id}`">{{goods.categories[0].name}}</XtxBreadItem>
+        <XtxBreadItem >{{goods.name}}</XtxBreadItem>
       </XtxBread>
       <!-- 商品信息 -->
       <div class="goods-info">
         <div class="media">
-          <GoodsImage v-if="goods" :images="goods.mainPictures" />
+          <GoodsImage  :images="goods.mainPictures" />
           <GoodsSales />
         </div>
         <div class="spec">
