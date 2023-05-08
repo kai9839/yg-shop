@@ -12,8 +12,11 @@
       <div class="goods-info">
         <div class="media">
           <GoodsImage v-if="goods" :images="goods.mainPictures" />
+          <GoodsSales />
         </div>
-        <div class="spec"></div>
+        <div class="spec">
+          <GoodsName :goods="goods"/>
+        </div>
       </div>
       <!-- 商品推荐 -->
       <GoodsRelevant />
@@ -36,11 +39,13 @@
 import { nextTick, ref, watch } from 'vue'
 import GoodsRelevant from './components/goods-relevant'
 import GoodsImage from './components/goods-images.vue'
+import GoodsSales from './components/goods-sales'
+import GoodsName from './components/goods-name'
 import { useRoute } from 'vue-router'
 import { findGoods } from '@/api/product'
 export default {
   name: 'XtxGoodsPage',
-  components: { GoodsRelevant, GoodsImage },
+  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName },
   setup () {
     const goods = useGoods()
     return { goods }
@@ -70,6 +75,7 @@ const useGoods = () => {
 .goods-info {
   min-height: 600px;
   background: #fff;
+  display: flex;
   .media {
     width: 580px;
     height: 600px;
