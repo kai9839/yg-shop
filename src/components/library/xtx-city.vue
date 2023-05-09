@@ -1,41 +1,85 @@
 <template>
   <div class="xtx-city" ref="target">
-    <div class="select" @click="toggleDialog" :class="{active}">
+    <div class="select" @click="toggle()" :class="{active:visible}">
       <span class="placeholder">请选择配送地址</span>
       <span class="value"></span>
       <i class="iconfont icon-angle-down"></i>
     </div>
-    <div class="option" v-if="active">
-      <span class="ellipsis" v-for="i in 24" :key="i">北京市</span>
+    <div class="option" v-if="visible">
+      <div v-if="loading" class="loading"></div>
+      <template v-else>
+        <span class="ellipsis" v-for="item in currList" :key="item.code">{{item.name}}</span>
+      </template>
     </div>
   </div>
 </template>
 <script>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
+import axios from 'axios'
 export default {
   name: 'XtxCity',
   setup () {
-    // 控制展开收起,默认收起
-    const active = ref(false)
-    const openDialog = () => {
-      active.value = true
+    // 显示隐藏数据
+    const visible = ref(false)
+    // 正在加载数据
+    const loading = ref(false)
+    // 所有省市区数据
+    const allCityData = ref([])
+
+    // 提供打开和关闭函数
+    const open = () => {
+      visible.value = true
+      loading.value = true
+      // 获取数据
+      getCityData().then(data => {
+        allCityData.value = data
+        loading.value = false
+      })
     }
-    const closeDialog = () => {
-      active.value = false
+    const close = () => {
+      visible.value = false
     }
-    // 切换展开收起
-    const toggleDialog = () => {
-      if (active.value) closeDialog()
-      else openDialog()
+    // 提供一个切换函数给select使用
+    const toggle = () => {
+      visible.value ? close() : open()
     }
-    // 点击其他位置隐藏
+    // 实现点击组件外部元素进行关闭操作
     const target = ref(null)
     onClickOutside(target, () => {
-      closeDialog()
+      // 参数1：监听那个元素
+      // 参数2：点击了该元素外的其他地方触发的函数
+      close()
     })
-    return { active, toggleDialog, target }
+    // 定义计算属性
+    const currList = computed(() => {
+      const currList = allCityData.value
+      // TODO 根据点击的省份城市获取对应的列表
+      return currList
+    })
+
+    return { visible, toggle, target, currList, loading }
   }
+}
+// 获取城市数据
+// 1. 数据在哪里？https://yjy-oss-files.oss-cn-zhangjiakou.aliyuncs.com/tuxian/area.json
+// 2. 何时获取？打开城市列表的时候，做个内存中缓存
+// 3. 怎么使用数据？定义计算属性，根据点击的省份城市展示
+const getCityData = () => {
+  // 这个位置可能有异常操作，封装成promise
+  return new Promise((resolve, reject) => {
+    if (window.cityData) {
+      // 有缓存
+      resolve(window.cityData)
+    } else {
+      // 无缓存
+      const url = 'https://yjy-oss-files.oss-cn-zhangjiakou.aliyuncs.com/tuxian/area.json'
+      axios.get(url).then(res => {
+        window.cityData = res.data
+        resolve(window.cityData)
+      })
+    }
+  })
 }
 </script>
 <style scoped lang="less">
@@ -76,6 +120,11 @@ export default {
     display: flex;
     flex-wrap: wrap;
     padding: 10px;
+    .loading {
+      height: 290px;
+      width: 100%;
+      background: url(../../assets/images/loading.gif) no-repeat center;
+    }
     > span {
       width: 130px;
       text-align: center;
