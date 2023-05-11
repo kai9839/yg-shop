@@ -17,7 +17,7 @@
         <div class="spec">
           <GoodsName :goods="goods"/>
           <!-- 规格组件 -->
-          <GoodsSku :goods="goods" />
+          <GoodsSku :goods="goods" @change="changeSku"/>
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -51,9 +51,18 @@ export default {
   components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku },
   setup () {
     const goods = useGoods()
-    return { goods }
+    // sku改变时候触发
+    const changeSku = (sku) => {
+      if (sku.skuId) {
+        goods.value.price = sku.price
+        goods.value.oldPrice = sku.oldPrice
+        goods.value.inventory = sku.inventory
+      }
+    }
+    return { goods, changeSku }
   }
 }
+
 // 获取商品详情
 const useGoods = () => {
   // 出现路由地址商品ID发生变化，但是不会重新初始化组件

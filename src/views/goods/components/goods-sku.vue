@@ -67,16 +67,39 @@ const updateDisabledStatus = (specs, pathMap) => {
   })
 }
 
+// 初始化选中状态
+const initSelectedStatus = (goods, skuId) => {
+  const sku = goods.skus.find(sku => sku.id === skuId)
+  if (sku) {
+    goods.specs.forEach((spec, i) => {
+      const value = sku.specs[i].valueName
+      spec.values.forEach(val => {
+        val.selected = val.name === value
+      })
+    })
+  }
+}
+
 export default {
   name: 'GoodsSku',
   props: {
     goods: {
       type: Object,
       default: () => ({ space: [], skus: [] })
+    },
+    skuId: {
+      type: String,
+      default: ''
     }
   },
-  setup (props) {
+  setup (props, { emit }) {
     const pathMap = getPathMap(props.goods.skus)
+    console.log(props.skuId)
+    // 根据传入的skuId默认选中规格按钮
+    if (props.skuId) {
+      console.log(props.skuId)
+      initSelectedStatus(props.goods, props.skuId)
+    }
     // 组件初始化的时候更新禁用状态
     updateDisabledStatus(props.goods.specs, pathMap)
     const clickSpecs = (item, val) => {
@@ -91,6 +114,25 @@ export default {
       }
       // 点击的时候更新禁用状态
       updateDisabledStatus(props.goods.specs, pathMap)
+      // 将你选择的sku信息通知父组件{skuId,price,oldPrice,inventory,specsText}
+      // 1. 选择完整的sku组合按钮，才可以拿到这些信息，提交父组件
+      // 2. 不是完整的sku组合按钮，提交空对象父组件
+      // 触发change事件将sku数据传递出去
+      const selectedArr = getSelectedArr(props.goods.specs).filter(v => v)
+      if (selectedArr.length === props.goods.specs.length) {
+        const skuIds = pathMap[selectedArr.join(spliter)]
+        const sku = props.goods.skus.find(sku => sku.id === skuIds[0])
+        // 传递
+        emit('change', {
+          skuId: sku.id,
+          price: sku.price,
+          oldPrice: sku.oldPrice,
+          inventory: sku.inventory,
+          specsText: sku.specs.reduce((p, n) => `${p} ${n.name}:${n.valueName}`, '').replace(' ', '')
+        })
+      } else {
+        emit('change', {})
+      }
     }
     return { clickSpecs }
   }
