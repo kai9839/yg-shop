@@ -94,7 +94,6 @@ export default {
   },
   setup (props, { emit }) {
     const pathMap = getPathMap(props.goods.skus)
-    console.log(props.skuId)
     // 根据传入的skuId默认选中规格按钮
     if (props.skuId) {
       console.log(props.skuId)
