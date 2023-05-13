@@ -30,7 +30,7 @@
       <div class="goods-footer">
         <div class="goods-article">
           <!-- 商品+评价 -->
-          <div class="goods-tabs"></div>
+          <GoodsTabs />
           <!-- 注意事项 -->
           <div class="goods-warn"></div>
         </div>
@@ -44,15 +44,16 @@
 <script>
 import { nextTick, ref, watch } from 'vue'
 import GoodsRelevant from './components/goods-relevant'
-import GoodsImage from './components/goods-images.vue'
+import GoodsImage from './components/goods-images'
 import GoodsSales from './components/goods-sales'
 import GoodsName from './components/goods-name'
 import GoodsSku from './components/goods-sku'
+import GoodsTabs from './components/goods-tabs'
 import { useRoute } from 'vue-router'
 import { findGoods } from '@/api/product'
 export default {
   name: 'XtxGoodsPage',
-  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku },
+  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku, GoodsTabs },
   setup () {
     const goods = useGoods()
     // sku改变时候触发
@@ -115,10 +116,6 @@ const useGoods = () => {
     width: 280px;
     min-height: 1000px;
   }
-}
-.goods-tabs {
-  min-height: 600px;
-  background: #fff;
 }
 .goods-warn {
   min-height: 600px;
