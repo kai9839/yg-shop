@@ -5,7 +5,7 @@
       <!-- fade 显示的图片加上 -->
       <li class="carousel-item" v-for="(item,i) in sliders" :key="i" :class="{fade:index===i}">
         <!-- 图片 -->
-        <RouterLink v-if="item.imgUrl" to="/">
+        <RouterLink v-if="item.imgUrl" :to="item.hrefUrl">
           <img :src="item.imgUrl" alt="">
         </RouterLink>
         <!-- 商品列表 item=[goods1,goods2,。。。]-->
