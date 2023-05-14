@@ -36,6 +36,8 @@
         </div>
         <!-- 24热榜+专题推荐 -->
         <div class="goods-aside"></div>
+        <GoodsHot :goodsId="goods.id" :type="1" />
+        <GoodsHot :goodsId="goods.id" :type="2" />
       </div>
     </div>
   </div>
@@ -49,11 +51,12 @@ import GoodsSales from './components/goods-sales'
 import GoodsName from './components/goods-name'
 import GoodsSku from './components/goods-sku'
 import GoodsTabs from './components/goods-tabs'
+import GoodsHot from './components/goods-hot'
 import { useRoute } from 'vue-router'
 import { findGoods } from '@/api/product'
 export default {
   name: 'XtxGoodsPage',
-  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku, GoodsTabs },
+  components: { GoodsHot, GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku, GoodsTabs },
   setup () {
     const goods = useGoods()
     // sku改变时候触发
