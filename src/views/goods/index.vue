@@ -35,16 +35,17 @@
           <div class="goods-warn"></div>
         </div>
         <!-- 24热榜+专题推荐 -->
-        <div class="goods-aside"></div>
-        <GoodsHot :goodsId="goods.id" :type="1" />
-        <GoodsHot :goodsId="goods.id" :type="2" />
+        <div class="goods-aside">
+          <GoodsHot :goodsId="goods.id" :type="1" />
+          <GoodsHot :goodsId="goods.id" :type="2" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { nextTick, ref, watch } from 'vue'
+import { nextTick, provide, ref, watch } from 'vue'
 import GoodsRelevant from './components/goods-relevant'
 import GoodsImage from './components/goods-images'
 import GoodsSales from './components/goods-sales'
@@ -69,6 +70,8 @@ export default {
     }
     // 选择的数量
     const num = ref(1)
+    // 提供goods数据给后代组件使用
+    provide('goods', goods)
     return { goods, changeSku, num }
   }
 }

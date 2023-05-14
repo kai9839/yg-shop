@@ -1,69 +1,170 @@
 <template>
-  <div class="goods-hot">
-    <h3>{{title}}</h3>
-    <div v-if="goodsList">
-      <GoodsItem v-for="item in goodsList" :key="item.id" :goods="item" />
+  <div class='xtx-goods-page' v-if="goods">
+    <div class="container">
+      <!-- 面包屑 -->
+      <XtxBread>
+        <XtxBreadItem to="/">首页</XtxBreadItem>
+        <XtxBreadItem :to="`/category/${goods.categories[1].id}`">{{goods.categories[1].name}}</XtxBreadItem>
+        <XtxBreadItem :to="`/category/sub/${goods.categories[0].id}`">{{goods.categories[0].name}}</XtxBreadItem>
+        <XtxBreadItem>{{goods.name}}</XtxBreadItem>
+      </XtxBread>
+      <!-- 商品信息 -->
+      <div class="goods-info">
+        <div class="media">
+          <GoodsImage :images="goods.mainPictures" />
+          <GoodsSales />
+        </div>
+        <div class="spec">
+          <GoodsName :goods="goods" />
+          <!-- sku组件 skuId="1369155865461919746" 测试选中 -->
+          <GoodsSku :goods="goods" @change="changeSku" />
+          <!-- 数量选择组件 -->
+          <XtxNumbox label="数量" v-model="num" :max="goods.inventory" />
+          <!-- 按钮组件 -->
+          <XtxButton @click="insertCart()" type="primary" style="margin-top:20px">加入购物车</XtxButton>
+        </div>
+      </div>
+      <!-- 商品推荐 -->
+      <GoodsRelevant :goodsId="goods.id" />
+      <!-- 商品详情 -->
+      <div class="goods-footer">
+        <div class="goods-article">
+          <!-- 商品+评价 -->
+          <GoodsTabs />
+          <!-- 注意事项 -->
+          <GoodsWarn />
+        </div>
+        <!-- 24热榜+周热销榜 -->
+        <div class="goods-aside">
+          <GoodsHot />
+          <GoodsHot :type="2" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
+
 <script>
-import GoodsItem from '@/views/category/components/goods-item'
-import { computed, ref } from 'vue'
-import { findGoodsHot } from '@/api/product'
+import GoodsRelevant from './components/goods-relevant'
+import GoodsImage from './components/goods-image'
+import GoodsSales from './components/goods-sales'
+import GoodsName from './components/goods-name'
+import GoodsSku from './components/goods-sku'
+import GoodsTabs from './components/goods-tabs'
+import GoodsHot from './components/goods-hot'
+import GoodsWarn from './components/goods-warn'
+import { nextTick, provide, ref, watch } from 'vue'
+import { findGoods } from '@/api/product'
 import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
+import Message from '@/components/library/Message'
 export default {
-  name: 'GoodsHot',
-  components: { GoodsItem },
-  props: {
-    // 热榜类型
-    type: {
-      type: Number,
-      default: 1
+  name: 'XtxGoodsPage',
+  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku, GoodsTabs, GoodsHot, GoodsWarn },
+  setup () {
+    const goods = useGoods()
+    const changeSku = (sku) => {
+      // 修改商品的现价原价库存信息
+      if (sku.skuId) {
+        goods.value.price = sku.price
+        goods.value.oldPrice = sku.oldPrice
+        goods.value.inventory = sku.inventory
+      }
+      // 记录选择后的sku，可能有数据，可能没有数据{}
+      currSku.value = sku
     }
-  },
-  setup (props) {
-    // 类型数据字典
-    const types = { 1: '24小时热销榜', 2: '周热销榜', 3: '总热销榜' }
-    const title = computed(() => {
-      return types[props.type]
-    })
-    // 发请求获取数据
-    const route = useRoute()
-    const goodsList = ref([])
-    findGoodsHot({ id: route.params.id, type: props.type }).then(data => {
-      goodsList.value = data.result
-    })
-    return { title, goodsList }
+
+    // 提供goods数据给后代组件使用
+    provide('goods', goods)
+
+    // 选择的数量
+    const num = ref(1)
+
+    // 加入购物车
+    const store = useStore()
+    const currSku = ref(null)
+    const insertCart = () => {
+      if (currSku.value && currSku.value.skuId) {
+        // id skuId name attrsText picture price nowPrice selected stock count isEffective
+        const { skuId, specsText: attrsText, inventory: stock } = currSku.value
+        const { id, name, price, mainPictures } = goods.value
+        store.dispatch('cart/insertCart', {
+          skuId,
+          attrsText,
+          stock,
+          id,
+          name,
+          price,
+          nowPrice: price,
+          picture: mainPictures[0],
+          selected: true,
+          isEffective: true,
+          count: num.value
+        }).then(() => {
+          Message({ type: 'success', text: '加入购物车成功' })
+        })
+      } else {
+        Message({ text: '请选择完整规格' })
+      }
+    }
+
+    return { goods, changeSku, num, insertCart }
   }
+}
+// 获取商品详情
+const useGoods = () => {
+  // 出现路由地址商品ID发生变化，但是不会重新初始化组件
+  const goods = ref(null)
+  const route = useRoute()
+  watch(() => route.params.id, (newVal) => {
+    if (newVal && `/product/${newVal}` === route.path) {
+      findGoods(route.params.id).then(data => {
+        // 让商品数据为null然后使用v-if的组件可以重新销毁和创建
+        goods.value = null
+        nextTick(() => {
+          goods.value = data.result
+        })
+      })
+    }
+  }, { immediate: true })
+  return goods
 }
 </script>
-<style scoped lang="less">
-.goods-hot {
-  h3 {
-    height: 70px;
-    background: @helpColor;
-    color: #fff;
-    font-size: 18px;
-    line-height: 70px;
-    padding-left: 25px;
-    margin-bottom: 10px;
-    font-weight: normal;
+
+<style scoped lang='less'>
+.goods-info {
+  min-height: 600px;
+  background: #fff;
+  display: flex;
+  .media {
+    width: 580px;
+    height: 600px;
+    padding: 30px 50px;
   }
-  :deep(.goods-item) {
-    background: #fff;
-    width: 100%;
-    margin-bottom: 10px;
-    img {
-      width: 200px;
-      height: 200px;
-    }
-    p {
-      margin: 0 10px;
-    }
-    &:hover {
-      transform: none;
-      box-shadow: none;
-    }
+  .spec {
+    flex: 1;
+    padding: 30px 30px 30px 0;
   }
 }
+.goods-footer {
+  display: flex;
+  margin-top: 20px;
+  .goods-article {
+    width: 940px;
+    margin-right: 20px;
+  }
+  .goods-aside {
+    width: 280px;
+    min-height: 1000px;
+  }
+}
+// .goods-tabs {
+//   min-height: 600px;
+//   background: #fff;
+// }
+// .goods-warn {
+//   min-height: 600px;
+//   background: #fff;
+//   margin-top: 20px;
+// }
 </style>
