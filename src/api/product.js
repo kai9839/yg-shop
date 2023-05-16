@@ -34,6 +34,7 @@ export const findCommentInfoByGoods = (id) => {
   return request(`https://mock.boxuegu.com/mock/1175/goods/${id}/evaluate`, 'get')
 }
 // https://mock.boxuegu.com/mock/1175/goods/${id}/evaluate
+// /goods/${id}/evaluate
 
 /**
  * 查询商品评价列表
