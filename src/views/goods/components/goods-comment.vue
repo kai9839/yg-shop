@@ -62,6 +62,8 @@
         </div>
       </div>
     </div>
+    <!-- 分页组件 -->
+    <XtxPagination v-if="total" @current-change="changePager" :total="total" :current-page="reqParams.page"/>
   </div>
 </template>
 <script>
@@ -121,9 +123,11 @@ export default {
     }
     // 初始化或者筛选条件改变后，获取列表数据。
     const commentList = ref([])
+    const total = ref(0)
     watch(reqParams, async () => {
       const data = await findCommentListByGoods(goods.value.id, reqParams)
       commentList.value = data.result.items
+      total.value = data.result.counts
     }, { immediate: true })
     // 定义转换数据的函数（对应vue2.0的过滤器）
     const formatSpecs = (specs) => {
@@ -132,7 +136,22 @@ export default {
     const formatNickname = (nickname) => {
       return nickname.substr(0, 1) + '****' + nickname.substr(-1)
     }
-    return { formatNickname, formatSpecs, changeSort, commentInfo, currTagIndex, changeTag, reqParams, commentList }
+    // 改变分页函数
+    const changePager = (np) => {
+      reqParams.page = np
+    }
+    return {
+      formatNickname,
+      formatSpecs,
+      changeSort,
+      commentInfo,
+      currTagIndex,
+      changeTag,
+      reqParams,
+      commentList,
+      changePager,
+      total
+    }
   }
 }
 </script>
