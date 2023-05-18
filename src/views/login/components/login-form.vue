@@ -83,6 +83,7 @@
 import { Form, Field } from 'vee-validate'
 import { reactive, ref, watch } from 'vue'
 import schema from '@/utils/vee-validate-schema'
+import Message from '@/components/library/Message'
 export default {
   name: 'LoginForm',
   components: { Form, Field },
@@ -125,13 +126,23 @@ export default {
       // Form组件提供了一个 resetForm 函数清除校验结果
       formCom.value.resetForm()
     })
+
+    // setup中获取组件实例 proxy
+    // const { proxy } = getCurrentInstance()
+    // proxy.$message({ text: '111' })
+
     // 需要在点击登录的时候对整体表单进行校验
-    const login = async () => {
+    const login = () => {
       // Form组件提供了一个 validate 函数作为整体表单校验，当是返回的是一个promise
-      const valid = await formCom.value.validate()
-      console.log(valid)
+      formCom.value.validate().then(valid => {
+        console.log(valid)
+        Message({ type: 'error', text: '登录失败' })
+      })
     }
     return { isMsgLogin, form, schema: mySchema, formCom, login }
+  },
+  created () {
+    this.$message({ type: 'error', text: '登录失败' })
   }
 }
 
