@@ -58,7 +58,7 @@
       </template>
       <div class="form-item">
         <div class="agree">
-          <Field as="XtxCheckbox" name="isAgree" v-model="form.isAgree"/>
+          <Field as="XtxCheckbox" name="isAgree" v-model="form.isAgree" v-show="false" />
           <XtxCheckbox v-model="form.isAgree" />
           <span>我已同意</span>
           <a href="javascript:;">《隐私条款》</a>
@@ -218,18 +218,19 @@ export default {
         formCom.value.setFieldError('mobile', valid)
       }
     }
+
+    // 初始化QQ登录按钮 （官方）
+    // 1. 准备span有id = qqLoginBtn
+    // 2. QC.Login({btnId:"qqLoginBtn"})
     // onMounted(() => {
-    //   // 组件渲染完毕，使用QC生成QQ登录按钮
-    //   QC.Login({
-    //     btnId: 'qqLoginBtn'
-    //   })
+    //   QC.Login({ btnId: 'qqLoginBtn' })
     // })
+
     return { isMsgLogin, form, schema: mySchema, formCom, login, send, time }
   }
 }
-
 </script>
-<style  lang="less" scoped>
+<style scoped lang="less">
 // 账号容器
 .account-box {
   .toggle {

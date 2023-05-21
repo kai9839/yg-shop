@@ -25,12 +25,8 @@ import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 export default {
-  name: 'Login',
-  components: {
-    LoginHeader,
-    LoginFooter,
-    LoginForm
-  },
+  name: 'PageLogin',
+  components: { LoginHeader, LoginFooter, LoginForm },
   setup () {
     const activeName = ref('account')
 
@@ -80,6 +76,8 @@ export default {
         }
       }
     }
+  }
+}
     // 二维码容器
     .qrcode-box {
       text-align: center;
@@ -89,8 +87,6 @@ export default {
         a {
           color: @xtxColor;
           font-size: 16px;
-        }
-      }
     }
   }
 }
