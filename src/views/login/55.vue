@@ -58,8 +58,7 @@
       </template>
       <div class="form-item">
         <div class="agree">
-          <Field as="XtxCheckbox" name="isAgree" v-model="form.isAgree"/>
-          <XtxCheckbox v-model="form.isAgree" />
+          <Field as="XtxCheckbox" name="isAgree" v-model="form.isAgree" />
           <span>我已同意</span>
           <a href="javascript:;">《隐私条款》</a>
           <span>和</span>
@@ -73,7 +72,6 @@
       <a @click="login()" href="javascript:;" class="btn">登录</a>
     </Form>
     <div class="action">
-      <!-- <span id="qqLoginBtn"></span> -->
       <a href="https://graph.qq.com/oauth2.0/authorize?client_id=100556005&response_type=token&scope=all&redirect_uri=http%3A%2F%2Fwww.corho.com%3A8080%2F%23%2Flogin%2Fcallback">
         <img src="https://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Connect_logo_7.png" alt="">
       </a>
@@ -93,7 +91,6 @@ import { userAccountLogin, userMobileLogin, userMobileLoginMsg } from '@/api/use
 import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
 import { useIntervalFn } from '@vueuse/core'
-// import QC from 'qc'
 export default {
   name: 'LoginForm',
   components: { Form, Field },
@@ -145,13 +142,12 @@ export default {
     const store = useStore()
     const router = useRouter()
     const route = useRoute()
-    // 登录提交
     const login = async () => {
       // Form组件提供了一个 validate 函数作为整体表单校验，当是返回的是一个promise
       const valid = await formCom.value.validate()
       if (valid) {
-        let data = null
         try {
+          let data = null
           if (isMsgLogin.value) {
             // **手机号登录
             // 2.1. 准备一个API做手机号登录
@@ -172,10 +168,12 @@ export default {
           // 存储用户信息
           const { id, account, avatar, mobile, nickname, token } = data.result
           store.commit('user/setUser', { id, account, avatar, mobile, nickname, token })
-          // 进行跳转
-          router.push(route.query.redirectUrl || '/')
-          // 成功消息提示
-          Message({ type: 'success', text: '登录成功' })
+          store.dispatch('cart/mergeCart').then(() => {
+            // 进行跳转
+            router.push(route.query.redirectUrl || '/')
+            // 成功消息提示
+            Message({ type: 'success', text: '登录成功' })
+          })
         } catch (e) {
           // 失败提示
           if (e.response.data) {
@@ -207,7 +205,7 @@ export default {
       if (valid === true) {
         // 通过
         if (time.value === 0) {
-          // 没有倒计时才可以发送
+        // 没有倒计时才可以发送
           await userMobileLoginMsg(form.mobile)
           Message({ type: 'success', text: '发送成功' })
           time.value = 60
@@ -218,18 +216,19 @@ export default {
         formCom.value.setFieldError('mobile', valid)
       }
     }
+
+    // 初始化QQ登录按钮 （官方）
+    // 1. 准备span有id = qqLoginBtn
+    // 2. QC.Login({btnId:"qqLoginBtn"})
     // onMounted(() => {
-    //   // 组件渲染完毕，使用QC生成QQ登录按钮
-    //   QC.Login({
-    //     btnId: 'qqLoginBtn'
-    //   })
+    //   QC.Login({ btnId: 'qqLoginBtn' })
     // })
+
     return { isMsgLogin, form, schema: mySchema, formCom, login, send, time }
   }
 }
-
 </script>
-<style  lang="less" scoped>
+<style scoped lang="less">
 // 账号容器
 .account-box {
   .toggle {
