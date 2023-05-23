@@ -1,13 +1,13 @@
 <template>
   <div class="cart">
-    <a class="curr" href="javascript:;">
+    <RouterLink to="/cart" class="curr" >
       <i class="iconfont icon-cart"></i><em>{{$store.getters['cart/validTotal']}}</em>
-    </a>
+    </RouterLink>
     <!-- 购物车无商品不显示弹出层,并且不是在购物车页面 -->
     <div class="layer"  v-if="$store.getters['cart/validTotal']&&$route.path!=='/cart'">
       <div class="list">
         <div class="item" v-for="item in $store.getters['cart/validList']" :key="item.skuId">
-          <RouterLink to="">
+          <RouterLink :to="`/product/${item.id}`">
             <img :src="item.picture" alt="">
             <div class="center">
               <p class="name ellipsis-2">{{item.name}}</p>
@@ -26,7 +26,7 @@
           <p>共 {{$store.getters['cart/validTotal']}} 件商品</p>
           <p>&yen;{{$store.getters['cart/validAmount']}}</p>
         </div>
-        <XtxButton type="plain">去购物车结算</XtxButton>
+        <XtxButton type="plain" @click="$router.push('/cart')">去购物车结算</XtxButton>
       </div>
     </div>
   </div>
