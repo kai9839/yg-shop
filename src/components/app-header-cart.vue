@@ -3,7 +3,8 @@
     <a class="curr" href="javascript:;">
       <i class="iconfont icon-cart"></i><em>{{$store.getters['cart/validTotal']}}</em>
     </a>
-    <div class="layer">
+    <!-- 购物车无商品不显示弹出层,并且不是在购物车页面 -->
+    <div class="layer"  v-if="$store.getters['cart/validTotal']&&$route.path!=='/cart'">
       <div class="list">
         <div class="item" v-for="item in $store.getters['cart/validList']" :key="item.skuId">
           <RouterLink to="">
@@ -17,7 +18,7 @@
               <p class="count">x{{item.count}}</p>
             </div>
           </RouterLink>
-          <i class="iconfont icon-close-new"></i>
+          <i @click="deleteCart(item.skuId)" class="iconfont icon-close-new"></i>
         </div>
       </div>
       <div class="foot">
@@ -32,11 +33,22 @@
 </template>
 <script>
 import { useStore } from 'vuex'
+import Message from './library/Message'
 export default {
   name: 'AppHeaderCart',
   setup () {
     const store = useStore()
     store.dispatch('cart/findCartList')
+
+    // 删除
+    const deleteCart = (skuId) => {
+      store.dispatch('cart/deleteCart', skuId).then(() => {
+        Message({ type: 'success', text: '删除成功' })
+      }).catch(e => {
+        Message({ type: 'success', text: '删除成功' })
+      })
+    }
+    return { deleteCart }
   }
 }
 </script>

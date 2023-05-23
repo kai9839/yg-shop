@@ -20,6 +20,7 @@ export default {
       }
       state.list.unshift(goods)
     },
+
     // 修改购物车商品
     updateCart (state, goods) {
       // goods中字段有可能不完整，goods有的信息才去修改。
@@ -30,6 +31,12 @@ export default {
           updateGoods[key] = goods[key]
         }
       }
+    },
+
+    // 删除购物车商品
+    deleteCart (state, skuId) {
+      const index = state.list.findIndex(item => item.skuId === skuId)
+      state.list.splice(index, 1)
     }
   },
   actions: {
@@ -44,6 +51,7 @@ export default {
         }
       })
     },
+
     // 获取购物车列表
     findCartList (ctx) {
       return new Promise((resolve, reject) => {
@@ -67,6 +75,19 @@ export default {
           }).catch(e => {
             reject(e)
           })
+        }
+      })
+    },
+
+    // 删除购物车商品
+    deleteCart (ctx, skuId) {
+      return new Promise((resolve, reject) => {
+        if (ctx.rootState.user.profile.token) {
+          // 登录 TODO
+        } else {
+          // 本地
+          ctx.commit('deleteCart', skuId)
+          resolve()
         }
       })
     }
