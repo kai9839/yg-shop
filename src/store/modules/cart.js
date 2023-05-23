@@ -1,3 +1,5 @@
+import { getNewCartGoods } from '@/api/cart'
+
 // 购物车状态
 export default {
   namespaced: true,
@@ -17,6 +19,17 @@ export default {
         state.list.splice(sameIndex, 1)
       }
       state.list.unshift(goods)
+    },
+    // 修改购物车商品
+    updateCart (state, goods) {
+      // goods中字段有可能不完整，goods有的信息才去修改。
+      // 1. goods中必需又skuId，才能找到对应的商品信息
+      const updateGoods = state.list.find(item => item.skuId === goods.skuId)
+      for (const key in goods) {
+        if (goods[key] !== null && goods[key] !== undefined && goods[key] !== '') {
+          updateGoods[key] = goods[key]
+        }
+      }
     }
   },
   actions: {
@@ -30,6 +43,46 @@ export default {
           resolve()
         }
       })
+    },
+    // 获取购物车列表
+    findCartList (ctx) {
+      return new Promise((resolve, reject) => {
+        if (ctx.rootState.user.profile.token) {
+          // 登录 TODO
+        } else {
+          // 本地
+          // Promise.all() 可以并列发送多个请求，等所有请求成功，调用then
+          // Promise.race() 可以并列发送多个请求，等最快的请求成功，调用then
+          // 传参事promise数组
+          const promiseArr = ctx.state.list.map(item => {
+            // 返回接口函数的调用
+            return getNewCartGoods(item.skuId)
+          })
+          Promise.all(promiseArr).then(dataArr => {
+            console.log(dataArr)
+            dataArr.forEach((data, i) => {
+              ctx.commit('updateCart', { skuId: ctx.state.list[i].skuId, ...data.result })
+            })
+            resolve()
+          }).catch(e => {
+            reject(e)
+          })
+        }
+      })
+    }
+  },
+  getters: {
+    //  有效商品列表
+    validList (state) {
+      return state.list.filter(item => item.stock > 0 && item.isEffective)
+    },
+    // 有效商品件数
+    validTotal (state, getters) {
+      return getters.validList.reduce((p, c) => p + c.count, 0)
+    },
+    // 有效商品总金额
+    validAmount (state, getters) {
+      return getters.validList.reduce((p, c) => p + parseInt(c.nowPrice * 100) * c.count, 0) / 100
     }
   }
 }
