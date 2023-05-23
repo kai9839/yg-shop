@@ -52,22 +52,24 @@
             </tr>
           </tbody>
           <!-- 无效商品 -->
-          <tbody>
+          <tbody v-if="$store.getters['cart/invalidList'].length>0">
             <tr><td colspan="6"><h3 class="tit">失效商品</h3></td></tr>
-            <tr v-for="i in 3" :key="i">
+            <tr v-for="item in $store.getters['cart/invalidList']" :key="item.skuId">
               <td><XtxCheckbox style="color:#eee;" /></td>
               <td>
                 <div class="goods">
-                  <RouterLink to="/"><img src="https://yanxuan-item.nosdn.127.net/13ab302f8f2c954d873f03be36f8fb03.png" alt=""></RouterLink>
+                  <RouterLink :to="`/product/${item.id}`">
+                    <img :src="item.picture" alt="">
+                  </RouterLink>
                   <div>
-                    <p class="name ellipsis">和手足干裂说拜拜 ingrams手足皲裂修复霜</p>
-                    <p class="attr">颜色：粉色 尺寸：14cm 产地：中国</p>
+                    <p class="name ellipsis">{{item.name}}</p>
+                    <p class="attr">{{item.attrsText}}</p>
                   </div>
                 </div>
               </td>
-              <td class="tc"><p>&yen;200.00</p></td>
-              <td class="tc">1</td>
-              <td class="tc"><p>&yen;200.00</p></td>
+              <td class="tc"><p>&yen;{{item.nowPrice}}</p></td>
+              <td class="tc">{{item.count}}</td>
+              <td class="tc"><p>&yen;{{item.nowPrice*100*item.count/100}}</p></td>
               <td class="tc">
                 <p><a class="green" href="javascript:;">删除</a></p>
                 <p><a href="javascript:;">找相似</a></p>
