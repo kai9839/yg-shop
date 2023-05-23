@@ -67,7 +67,6 @@ export default {
             return getNewCartGoods(item.skuId)
           })
           Promise.all(promiseArr).then(dataArr => {
-            console.log(dataArr)
             dataArr.forEach((data, i) => {
               ctx.commit('updateCart', { skuId: ctx.state.list[i].skuId, ...data.result })
             })
@@ -104,6 +103,26 @@ export default {
     // 有效商品总金额
     validAmount (state, getters) {
       return getters.validList.reduce((p, c) => p + parseInt(c.nowPrice * 100) * c.count, 0) / 100
+    },
+    // 无效商品列表
+    invalidList (state) {
+      return state.list.filter(item => !(item.stock > 0 && item.isEffective))
+    },
+    // 选中商品列表
+    selectedList (state, getters) {
+      return getters.validList.filter(item => item.selected)
+    },
+    // 选中商品件数
+    selectedTotal (state, getters) {
+      return getters.selectedList.reduce((p, c) => p + c.count, 0)
+    },
+    // 选中商品总金额
+    selectedAmount (state, getters) {
+      return getters.selectedList.reduce((p, c) => p + parseInt(c.nowPrice * 100 * c.count), 0) / 100
+    },
+    // 是否全选
+    isCheckAll (state, getters) {
+      return getters.validList.length === getters.selectedList.length && getters.selectedList.length !== 0
     }
   }
 }
