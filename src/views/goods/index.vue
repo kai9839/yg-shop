@@ -21,7 +21,7 @@
           <!-- 数量选择组件 -->
           <xtx-numbox label="数量" v-model="num" :max="goods.inventory"/>
           <!-- 按钮组件 -->
-          <xtx-button type="primary" style="margin-top:20px;">加入购物车</xtx-button>
+          <xtx-button @click="insertCart()" type="primary" style="margin-top:20px;">加入购物车</xtx-button>
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -58,6 +58,8 @@ import GoodsHot from './components/goods-hot'
 import GoodsWarn from './components/goods-warn'
 import { useRoute } from 'vue-router'
 import { findGoods } from '@/api/product'
+import Message from '@/components/library/Message'
+import { useStore } from 'vuex'
 export default {
   name: 'XtxGoodsPage',
   components: { GoodsWarn, GoodsHot, GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku, GoodsTabs },
@@ -69,13 +71,44 @@ export default {
         goods.value.price = sku.price
         goods.value.oldPrice = sku.oldPrice
         goods.value.inventory = sku.inventory
+        currSku.value = sku
+      } else {
+        currSku.value = null
       }
     }
     // 选择的数量
     const num = ref(1)
+
     // 提供goods数据给后代组件使用
     provide('goods', goods)
-    return { goods, changeSku, num }
+
+    // 加入购物车逻辑
+    const currSku = ref(null)
+    const store = useStore()
+    const insertCart = () => {
+      if (!currSku.value) {
+        Message({ text: '请选择完整规格' })
+      }
+      if (num.value > goods.inventory) {
+        Message({ text: '库存不足' })
+      }
+      store.dispatch('cart/insertCart', {
+        id: goods.value.id,
+        skuId: currSku.value.skuId,
+        name: goods.value.name,
+        picture: goods.value.mainPictures[0],
+        price: currSku.value.price,
+        nowPrice: currSku.value.price,
+        count: num.value,
+        attrsText: currSku.value.specsText,
+        selected: true,
+        isEffective: true,
+        stock: currSku.value.inventory
+      }).then(() => {
+        Message({ type: 'success', text: '加入购物车成功' })
+      })
+    }
+    return { goods, changeSku, num, insertCart }
   }
 }
 
