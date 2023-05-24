@@ -89,6 +89,36 @@ export default {
           resolve()
         }
       })
+    },
+
+    // 修改购物车商品
+    updateCart (ctx, goods) {
+      // goods中: 必须有skuID, 其他想修改的属性selected count
+      return new Promise((resolve, reject) => {
+        if (ctx.rootState.user.profile.token) {
+          // 登录 TODO
+        } else {
+          // 本地
+          ctx.commit('updateCart', goods)
+          resolve()
+        }
+      })
+    },
+
+    // 做有效商品的全选&反选
+    checkAllCart (ctx, selected) {
+      return new Promise((resolve, reject) => {
+        if (ctx.rootState.user.profile.token) {
+          // 登录 TODO
+        } else {
+          // 本地
+          // 1. 获取有效的商品列表，遍历的去调用修改mutations即可
+          ctx.getters.validList.forEach(item => {
+            ctx.commit('updateCart', { skuId: item.skuId, selected })
+          })
+          resolve()
+        }
+      })
     }
   },
   getters: {
