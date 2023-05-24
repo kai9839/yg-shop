@@ -19,6 +19,11 @@
           </thead>
           <!-- 有效商品 -->
           <tbody>
+            <tr v-if="$store.getters['cart/validList'].length===0">
+              <td colspan="6">
+                <CartNone />
+              </td>
+            </tr>
             <tr v-for="item in $store.getters['cart/validList']" :key="item.skuId">
               <td><XtxCheckbox @change="$event=>checkOne(item.skuId,$event)" :modelValue="item.selected" /></td>
               <td>
@@ -46,7 +51,7 @@
               <td class="tc"><p class="f16 red">&yen;{{item.nowPrice*100*item.count/100}}</p></td>
               <td class="tc">
                 <p><a href="javascript:;">移入收藏夹</a></p>
-                <p><a class="green" href="javascript:;">删除</a></p>
+                <p><a @click="deleteCart(item.skuId)" class="green" href="javascript:;">删除</a></p>
                 <p><a href="javascript:;">找相似</a></p>
               </td>
             </tr>
@@ -71,7 +76,7 @@
               <td class="tc">{{item.count}}</td>
               <td class="tc"><p>&yen;{{item.nowPrice*100*item.count/100}}</p></td>
               <td class="tc">
-                <p><a class="green" href="javascript:;">删除</a></p>
+                <p><a class="green" @click="deleteCart(item.skuId)" href="javascript:;">删除</a></p>
                 <p><a href="javascript:;">找相似</a></p>
               </td>
             </tr>
@@ -99,10 +104,11 @@
 </template>
 <script>
 import GoodRelevant from '@/views/goods/components/goods-relevant'
+import CartNone from '@/views/cart/components/cart-one.vue'
 import { useStore } from 'vuex'
 export default {
   name: 'XtxCartPage',
-  components: { GoodRelevant },
+  components: { GoodRelevant, CartNone },
   setup () {
     const store = useStore()
     // 单选
@@ -113,7 +119,11 @@ export default {
     const checkAll = (selected) => {
       store.dispatch('cart/checkAllCart', selected)
     }
-    return { checkOne, checkAll }
+    // 删除
+    const deleteCart = (skuId) => {
+      store.dispatch('cart/deleteCart', skuId)
+    }
+    return { checkOne, checkAll, deleteCart }
   }
 }
 </script>
