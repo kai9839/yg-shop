@@ -119,7 +119,24 @@ export default {
           resolve()
         }
       })
+    },
+
+    // 批量删除选中商品
+    batchDeleteCart (ctx) {
+      return new Promise((resolve, reject) => {
+        if (ctx.rootState.user.profile.token) {
+          // 登录 TODO
+        } else {
+          // 本地
+          // 1. 获取选中商品列表，进行遍历调用deleteCart mutataions函数
+          ctx.getters.selectedList.forEach(item => {
+            ctx.commit('deleteCart', item.skuId)
+          })
+          resolve()
+        }
+      })
     }
+
   },
   getters: {
     //  有效商品列表
