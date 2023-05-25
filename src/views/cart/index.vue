@@ -34,7 +34,8 @@
                   <div>
                     <p class="name ellipsis">{{item.name}}</p>
                     <!-- 选择规格组件 -->
-                    <p class="attr">{{item.attrsText}}</p>
+                    <CartSku @change="$event=>updateCartSku(item.skuId,$event)" :attrs-text="item.attrsText" :skuId="item.skuId" />
+                    <!-- <p class="attr">{{item.attrsText}}</p> -->
                   </div>
                 </div>
               </td>
@@ -104,12 +105,13 @@
 </template>
 <script>
 import GoodRelevant from '@/views/goods/components/goods-relevant'
-import CartNone from '@/views/cart/components/cart-one.vue'
+import CartNone from '@/views/cart/components/cart-none.vue'
+import CartSku from './components/cart-sku'
 import Confirm from '@/components/library/Confirm'
 import { useStore } from 'vuex'
 export default {
   name: 'XtxCartPage',
-  components: { GoodRelevant, CartNone },
+  components: { GoodRelevant, CartNone, CartSku },
   setup () {
     const store = useStore()
     // 单选
@@ -139,7 +141,11 @@ export default {
     const changeCount = (skuId, count) => {
       store.dispatch('cart/updateCart', { skuId, count })
     }
-    return { checkOne, checkAll, deleteCart, batchDeleteCart, changeCount }
+    // 修改规格
+    const updateCartSku = (oldSkuId, newSku) => {
+      store.dispatch('cart/updateCartSku', { oldSkuId, newSku })
+    }
+    return { checkOne, checkAll, deleteCart, batchDeleteCart, changeCount, updateCartSku }
   }
 }
 </script>

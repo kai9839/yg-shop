@@ -130,10 +130,30 @@ export default {
           // 本地
           // 1. 获取选中商品列表，进行遍历调用deleteCart mutataions函数
           ctx.getters[isClear ? 'invalidList' : 'selectedList'].forEach(item => {
-            console.log(item.skuId)
             ctx.commit('deleteCart', item.skuId)
           })
           resolve()
+        }
+      })
+    },
+
+    // 修改sku规格函数
+    updateCartSku (ctx, { oldSkuId, newSku }) {
+      return new Promise((resolve, reject) => {
+        if (ctx.rootState.user.profile.token) {
+          // 登录 TODO
+        } else {
+          // 本地
+          // 但你修改了sku的时候其实skuId需要更改，相当于把原来的信息移出，创建一条新的商品信息。
+          // 1. 获取旧的商品信息
+          const oldGoods = ctx.state.list.find(item => item.skuId === oldSkuId)
+          // 2. 删除旧的商品
+          ctx.commit('deleteCart', oldSkuId)
+          // 3. 合并一条新的商品信息
+          const { skuId, price: nowPrice, inventory: stock, specsText: attrsText } = newSku
+          const newGoods = { ...oldGoods, skuId, nowPrice, stock, attrsText }
+          // 4. 去插入即可
+          ctx.commit('insertCart', newGoods)
         }
       })
     }

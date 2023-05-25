@@ -96,7 +96,7 @@ export default {
     const pathMap = getPathMap(props.goods.skus)
     // 根据传入的skuId默认选中规格按钮
     if (props.skuId) {
-      console.log(props.skuId)
+      // console.log(props.skuId)
       initSelectedStatus(props.goods, props.skuId)
     }
     // 组件初始化的时候更新禁用状态
