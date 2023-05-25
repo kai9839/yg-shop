@@ -27,3 +27,22 @@ export const mergeLocalCart = (cartList) => {
 export const findCartList = () => {
   return request('/member/cart', 'get')
 }
+
+/**
+ * 加入购物车
+ * @param {String} skuId - 商品SKUID
+ * @param {Integer} count - 商品数量
+ * @returns Promise
+ */
+export const insertCart = ({ skuId, count }) => {
+  return request('/member/cart', 'post', { skuId, count })
+}
+
+/**
+ * 删除商品（支持批量删除）
+ * @param {Array<string>} ids - skuId集合
+ * @returns Promise
+ */
+export const deleteCart = (ids) => {
+  return request('/member/cart', 'delete', { ids })
+}

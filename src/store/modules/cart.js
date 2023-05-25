@@ -1,4 +1,4 @@
-import { getNewCartGoods, mergeLocalCart, findCartList } from '@/api/cart'
+import { getNewCartGoods, mergeLocalCart, findCartList, insertCart, deleteCart } from '@/api/cart'
 
 // 购物车状态
 export default {
@@ -49,6 +49,12 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.token) {
           // 已登录 TODO
+          insertCart(goods).then(() => {
+            return findCartList()
+          }).then((data) => {
+            ctx.commit('setCartList', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           ctx.commit('insertCart', goods)
@@ -92,6 +98,12 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 登录 TODO
+          deleteCart([skuId]).then(() => {
+            return findCartList()
+          }).then((data) => {
+            ctx.commit('setCartList', data.result)
+            resolve()
+          })
         } else {
           // 本地
           ctx.commit('deleteCart', skuId)
