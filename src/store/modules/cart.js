@@ -1,4 +1,4 @@
-import { getNewCartGoods } from '@/api/cart'
+import { getNewCartGoods, mergeLocalCart, findCartList } from '@/api/cart'
 
 // 购物车状态
 export default {
@@ -37,6 +37,11 @@ export default {
     deleteCart (state, skuId) {
       const index = state.list.findIndex(item => item.skuId === skuId)
       state.list.splice(index, 1)
+    },
+
+    // 设置购物车列表
+    setCartList (state, list) {
+      state.list = list
     }
   },
   actions: {
@@ -57,6 +62,10 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 登录 TODO
+          findCartList().then(data => {
+            ctx.commit('setCartList', data.result)
+            resolve()
+          })
         } else {
           // 本地
           // Promise.all() 可以并列发送多个请求，等所有请求成功，调用then
@@ -156,6 +165,16 @@ export default {
           ctx.commit('insertCart', newGoods)
         }
       })
+    },
+
+    async mergeLocalCart (ctx) {
+      // 存储token后调用合并API接口函数进行购物合并
+      const cartList = ctx.getters.validList.map(({ skuId, selected, count }) => {
+        return { skuId, selected, count }
+      })
+      await mergeLocalCart(cartList)
+      // 合并成功将本地购物车删除
+      ctx.commit('setCartList', [])
     }
 
   },
