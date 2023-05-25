@@ -46,7 +46,7 @@
                 </p>
               </td>
               <td class="tc">
-                <XtxNumbox :modelValue="item.count" />
+                <XtxNumbox @change="$event=>changeCount(item.skuId,$event)" :max="item.stock" :modelValue="item.count" />
               </td>
               <td class="tc"><p class="f16 red">&yen;{{item.nowPrice*100*item.count/100}}</p></td>
               <td class="tc">
@@ -135,7 +135,11 @@ export default {
         store.dispatch('cart/batchDeleteCart', isClear)
       }).catch(e => {})
     }
-    return { checkOne, checkAll, deleteCart, batchDeleteCart }
+    // 修改数量
+    const changeCount = (skuId, count) => {
+      store.dispatch('cart/updateCart', { skuId, count })
+    }
+    return { checkOne, checkAll, deleteCart, batchDeleteCart, changeCount }
   }
 }
 </script>
