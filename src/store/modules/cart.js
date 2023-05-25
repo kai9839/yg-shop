@@ -122,14 +122,15 @@ export default {
     },
 
     // 批量删除选中商品
-    batchDeleteCart (ctx) {
+    batchDeleteCart (ctx, isClear) {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 登录 TODO
         } else {
           // 本地
           // 1. 获取选中商品列表，进行遍历调用deleteCart mutataions函数
-          ctx.getters.selectedList.forEach(item => {
+          ctx.getters[isClear ? 'invalidList' : 'selectedList'].forEach(item => {
+            console.log(item.skuId)
             ctx.commit('deleteCart', item.skuId)
           })
           resolve()
