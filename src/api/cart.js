@@ -46,3 +46,14 @@ export const insertCart = ({ skuId, count }) => {
 export const deleteCart = (ids) => {
   return request('/member/cart', 'delete', { ids })
 }
+
+/**
+ * 修改购物车商品的状态和数量
+ * @param {String} goods.skuId - 商品sku
+ * @param {Boolean} goods.selected - 选中状态
+ * @param {Integer} goods.count - 商品数量
+ * @returns Promise
+ */
+export const updateCart = (goods) => {
+  return request('/member/cart/' + goods.skuId, 'put', goods)
+}
