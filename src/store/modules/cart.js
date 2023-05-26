@@ -148,6 +148,14 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 登录 TODO
+          // 得到需要删除的商品列表（失效，选中）的skuId集合
+          const ids = ctx.getters[isClear ? 'invalidList' : 'selectedList'].map(item => item.skuId)
+          deleteCart(ids).then(() => {
+            return findCartList()
+          }).then((data) => {
+            ctx.commit('setCartList', data.result)
+            resolve()
+          })
         } else {
           // 本地
           // 1. 获取选中商品列表，进行遍历调用deleteCart mutataions函数
