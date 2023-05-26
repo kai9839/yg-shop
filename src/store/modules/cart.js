@@ -45,9 +45,10 @@ export default {
     }
   },
   actions: {
+    // 加入购物车
     insertCart (ctx, goods) {
       return new Promise((resolve, reject) => {
-        if (ctx.rootState.user.token) {
+        if (ctx.rootState.user.profile.token) {
           // 已登录 TODO
           insertCart(goods).then(() => {
             return findCartList()
