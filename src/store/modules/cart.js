@@ -1,4 +1,4 @@
-import { getNewCartGoods, mergeLocalCart, findCartList, insertCart, deleteCart, updateCart } from '@/api/cart'
+import { getNewCartGoods, mergeLocalCart, findCartList, insertCart, deleteCart, updateCart, checkAllCart } from '@/api/cart'
 
 // 购物车状态
 export default {
@@ -138,6 +138,13 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 登录 TODO
+          const ids = ctx.getters.validList.map(item => item.skuId)
+          checkAllCart({ selected, ids }).then(() => {
+            return findCartList()
+          }).then((data) => {
+            ctx.commit('setCartList', data.result)
+            resolve()
+          })
         } else {
           // 本地
           // 1. 获取有效的商品列表，遍历的去调用修改mutations即可
