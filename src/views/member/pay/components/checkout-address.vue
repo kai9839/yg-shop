@@ -10,9 +10,17 @@
       <a v-if="showAddress" href="javascript:;">修改地址</a>
     </div>
     <div class="action">
-      <XtxButton class="btn">切换地址</XtxButton>
+      <XtxButton @click="dialogVisible=true" class="btn">切换地址</XtxButton>
       <XtxButton class="btn">添加地址</XtxButton>
     </div>
+    <XtxDialog title="切换收货地址" v-model:visible="dialogVisible" >
+    <!-- vue3.0 仅支持v-slot+template写法 -->
+    565
+    <template v-slot:footer>
+      <XtxButton @click="dialogVisible=false" type="gray" style="margin-right:20px">取消</XtxButton>
+      <XtxButton @click="dialogVisible=false" type="primary">确认</XtxButton>
+    </template>
+  </XtxDialog>
   </div>
 </template>
 <script>
@@ -42,7 +50,9 @@ export default {
         }
       }
     }
-    return { showAddress }
+    // 对话框显示隐藏
+    const dialogVisible = ref(false)
+    return { showAddress, dialogVisible }
   }
 }
 </script>
