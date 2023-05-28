@@ -1,5 +1,6 @@
 <template>
-  <XtxDialog title="添加收货地址" v-model:visible="dialogVisible">
+  <XtxDialog :title="`${formData.id?'修改':'添加'}收货地址`" v-model:visible="dialogVisible">
+    <!-- 表单 -->
     <div class="address-edit">
       <div class="xtx-form">
         <div class="xtx-form-item">
@@ -17,10 +18,7 @@
         <div class="xtx-form-item">
           <div class="label">地区：</div>
           <div class="field">
-            <XtxCity placeholder="请选择所在地区"
-            :fullLocation="formData.fullLocation"
-            @change="changeCty"
-            />
+            <XtxCity :fullLocation="formData.fullLocation" @change="changeCty" placeholder="请选择所在地区"/>
           </div>
         </div>
         <div class="xtx-form-item">
@@ -50,28 +48,35 @@
   </XtxDialog>
 </template>
 <script>
-import { ref, reactive } from 'vue'
-import { addAddress } from '@/api/order'
+import { reactive, ref } from 'vue'
+import { addAddress, editAddress } from '@/api/order'
 import Message from '@/components/library/Message'
 export default {
   name: 'AddressEdit',
   setup (props, { emit }) {
     const dialogVisible = ref(false)
-    // 打开函数
-    const open = (form) => {
-      dialogVisible.value = true
-      // 传入{}的时候就是清空，否则就是赋值
-      for (const key in formData) {
-        // formData[key] = form[key]
-        if (key === 'isDefault') {
-          formData[key] = 1
-        } else {
-          formData[key] = null
+    // 打开对话框函数
+    const open = (address) => {
+      if (address && address.id) {
+        // 如果修改 填充表单
+        for (const key in address) {
+          formData[key] = address[key]
+        }
+      } else {
+        // 如果添加 清空表单
+        for (const key in formData) {
+          if (key === 'isDefault') {
+            formData[key] = 1
+          } else {
+            formData[key] = null
+          }
         }
       }
+      dialogVisible.value = true
     }
     // 表单数据
     const formData = reactive({
+      id: null,
       receiver: null,
       contact: null,
       provinceCode: null,
@@ -94,13 +99,26 @@ export default {
 
     // 添加时候的提交操作（修改）
     const submit = () => {
-      addAddress(formData).then(data => {
-        // 添加成功
-        Message({ text: '添加收货地址成功', type: 'success' })
-        formData.id = data.result.id
-        dialogVisible.value = false
-        emit('on-success', formData)
-      })
+      // 1. 省略了校验
+      // 2. 发送请求了
+      if (formData.id) {
+        // 修改请求
+        editAddress(formData).then(data => {
+          // 修改成功
+          Message({ text: '修改收货地址成功', type: 'success' })
+          dialogVisible.value = false
+          emit('on-success', formData)
+        })
+      } else {
+        // 添加请求
+        addAddress(formData).then(data => {
+          // 添加成功
+          Message({ text: '添加收货地址成功', type: 'success' })
+          formData.id = data.result.id
+          dialogVisible.value = false
+          emit('on-success', formData)
+        })
+      }
     }
     return { dialogVisible, open, formData, changeCty, submit }
   }
@@ -147,4 +165,4 @@ export default {
     top: 49px;
   }
 }
-</style>】
+</style>

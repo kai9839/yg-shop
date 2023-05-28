@@ -7,7 +7,7 @@
         <li><span>联系方式：</span>{{showAddress.contact}}</li>
         <li><span>收货地址：</span>{{showAddress.fullLocation.replace(/ /g,'')+showAddress.address}}</li>
       </ul>
-      <a v-if="showAddress" href="javascript:;">修改地址</a>
+      <a @click="openAddressEdit(showAddress)" v-if="showAddress" href="javascript:;">修改地址</a>
     </div>
     <div class="action">
       <XtxButton @click="openDialog()" class="btn">切换地址</XtxButton>
@@ -89,17 +89,27 @@ export default {
     const selectedAddress = ref(null)
     // 添加收货地址组件
     const addressEdit = ref(null)
-    const openAddressEdit = () => {
-      addressEdit.value.open()
+    const openAddressEdit = (address) => {
+      // 添加 {}  修改 {数据}
+      addressEdit.value.open(address)
     }
     // 成功
     const successHandler = (FormData) => {
-      // 将 formData 对象使用 JSON.stringify 方法转换为 JSON 字符串，
-      // 然后再使用 JSON.parse 方法将其转换回一个新的 JavaScript 对象，
-      // 这是为了防止对 props 中列表中的现有对象进行不必要的更改。
-      const json = JSON.stringify(FormData) // 需要克隆下，不然使用的是对象的引用
-      // eslint-disable-next-line vue/no-mutating-props
-      props.list.unshift(JSON.parse(json))
+      const editAddress = props.list.find(item => item.id === FormData.id)
+      if (editAddress) {
+        // 修改
+        for (const key in editAddress) {
+          editAddress[key] = FormData[key]
+        }
+      } else {
+        // 添加
+        // 将 formData 对象使用 JSON.stringify 方法转换为 JSON 字符串，
+        // 然后再使用 JSON.parse 方法将其转换回一个新的 JavaScript 对象，
+        // 这是为了防止对 props 中列表中的现有对象进行不必要的更改。
+        const json = JSON.stringify(FormData) // 需要克隆下，不然使用的是对象的引用
+        // eslint-disable-next-line vue/no-mutating-props
+        props.list.unshift(JSON.parse(json))
+      }
     }
     return {
       showAddress,
