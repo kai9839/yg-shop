@@ -10,18 +10,28 @@
       <a v-if="showAddress" href="javascript:;">修改地址</a>
     </div>
     <div class="action">
-      <XtxButton @click="dialogVisible=true" class="btn">切换地址</XtxButton>
+      <XtxButton @click="openDialog()" class="btn">切换地址</XtxButton>
       <XtxButton class="btn">添加地址</XtxButton>
     </div>
-    <XtxDialog title="切换收货地址" v-model:visible="dialogVisible" >
+  </div>
+  <XtxDialog title="切换收货地址" v-model:visible="dialogVisible" >
+    <div class="text item"
+      :class="{active:selectedAddress&&item.id===selectedAddress.id}"
+      @click="selectedAddress=item"
+      v-for="item in list"
+      :key="item.id">
+      <ul>
+        <li><span>收<i/>货<i/>人：</span>{{item.receiver}}</li>
+        <li><span>联系方式：</span>{{item.contact}}</li>
+        <li><span>收货地址：</span>{{item.fullLocation.replace(/ /g,'')+item.address}}</li>
+      </ul>
+    </div>
     <!-- vue3.0 仅支持v-slot+template写法 -->
-    565
     <template v-slot:footer>
       <XtxButton @click="dialogVisible=false" type="gray" style="margin-right:20px">取消</XtxButton>
       <XtxButton @click="dialogVisible=false" type="primary">确认</XtxButton>
     </template>
   </XtxDialog>
-  </div>
 </template>
 <script>
 import { ref } from 'vue'
@@ -35,7 +45,11 @@ export default {
       default: () => []
     }
   },
-  setup (props) {
+  // 1. 在拥有根元素的组件中，触发自定义事件，有没有emits选项无所谓
+  // 2. 如果你的组件渲染的代码片段，vue3.0规范，需要在emits中申明你所触发的自定义事件
+  // 3. 提倡：你发了自定义事件，需要在emits选项申明下，代码可读性很高
+  emits: ['change'],
+  setup (props, { emit }) {
     // 显示的地址
     const showAddress = ref(null)
     if (props.list.length) {
@@ -52,7 +66,21 @@ export default {
     }
     // 对话框显示隐藏
     const dialogVisible = ref(false)
-    return { showAddress, dialogVisible }
+    // 打开对话框
+    const openDialog = () => {
+      dialogVisible.value = true
+      selectedAddress.value = null
+    }
+    // 确认地址
+    const confirmAddress = () => {
+      dialogVisible.value = false
+      showAddress.value = selectedAddress.value
+      // 默认通知一个地址ID给父
+      emit('change', showAddress.value && showAddress.value.id)
+    }
+    // 选择的地址
+    const selectedAddress = ref(null)
+    return { showAddress, dialogVisible, selectedAddress, openDialog, confirmAddress }
   }
 }
 </script>
@@ -106,6 +134,28 @@ export default {
       font-size: 14px;
       &:first-child {
         margin-right: 10px;
+      }
+    }
+  }
+}
+.xtx-dialog {
+  .text {
+    flex: 1;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    &.item {
+      border: 1px solid #f5f5f5;
+      margin-bottom: 10px;
+      cursor: pointer;
+      &.active,&:hover {
+        border-color: @xtxColor;
+        background: lighten(@xtxColor,50%);
+      }
+      > ul {
+        padding: 10px;
+        font-size: 14px;
+        line-height: 30px;
       }
     }
   }
