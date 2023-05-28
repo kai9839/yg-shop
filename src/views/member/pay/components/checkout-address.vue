@@ -11,7 +11,7 @@
     </div>
     <div class="action">
       <XtxButton @click="openDialog()" class="btn">切换地址</XtxButton>
-      <XtxButton class="btn">添加地址</XtxButton>
+      <XtxButton @click="openAddressEdit()" class="btn">添加地址</XtxButton>
     </div>
   </div>
   <XtxDialog title="切换收货地址" v-model:visible="dialogVisible" >
@@ -29,15 +29,20 @@
     <!-- vue3.0 仅支持v-slot+template写法 -->
     <template v-slot:footer>
       <XtxButton @click="dialogVisible=false" type="gray" style="margin-right:20px">取消</XtxButton>
-      <XtxButton @click="dialogVisible=false" type="primary">确认</XtxButton>
+      <XtxButton @click="confirmAddress" type="primary">确认</XtxButton>
     </template>
   </XtxDialog>
+  <!-- 收货地址添加编辑组件 -->
+  <AddressEdit @on-success="successHandler" ref="addressEdit" />
 </template>
 <script>
 import { ref } from 'vue'
+import AddressEdit from './address-edit'
 export default {
   name: 'CheckoutAddress',
+  components: { AddressEdit },
   props: {
+    // 收货地址列表
     list: {
       type: Array,
       // 默认值函数（() => []）是为了解决在Vue组件中使用对象或数组作为默认值的问题。
@@ -50,7 +55,9 @@ export default {
   // 3. 提倡：你发了自定义事件，需要在emits选项申明下，代码可读性很高
   emits: ['change'],
   setup (props, { emit }) {
-    // 显示的地址
+    // 1. 找到默认收货地址
+    // 2. 没有默认收货地址，使用第一条收货地址
+    // 3. 如果没有数据，提示添加
     const showAddress = ref(null)
     if (props.list.length) {
       const defaultAddress = props.list.find(item => item.isDefault === 1)
@@ -80,11 +87,56 @@ export default {
     }
     // 选择的地址
     const selectedAddress = ref(null)
-    return { showAddress, dialogVisible, selectedAddress, openDialog, confirmAddress }
+    // 添加收货地址组件
+    const addressEdit = ref(null)
+    const openAddressEdit = () => {
+      addressEdit.value.open()
+    }
+    // 成功
+    const successHandler = (FormData) => {
+      // 将 formData 对象使用 JSON.stringify 方法转换为 JSON 字符串，
+      // 然后再使用 JSON.parse 方法将其转换回一个新的 JavaScript 对象，
+      // 这是为了防止对 props 中列表中的现有对象进行不必要的更改。
+      const json = JSON.stringify(FormData) // 需要克隆下，不然使用的是对象的引用
+      // eslint-disable-next-line vue/no-mutating-props
+      props.list.unshift(JSON.parse(json))
+    }
+    return {
+      showAddress,
+      dialogVisible,
+      selectedAddress,
+      openDialog,
+      confirmAddress,
+      addressEdit,
+      openAddressEdit,
+      successHandler
+    }
   }
 }
 </script>
 <style scoped lang="less">
+.xtx-dialog {
+  .text {
+    flex: 1;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    &.item {
+      border: 1px solid #f5f5f5;
+      margin-bottom: 10px;
+      cursor: pointer;
+      &.active,&:hover {
+        border-color: @xtxColor;
+        background: lighten(@xtxColor,50%);
+      }
+      > ul {
+        padding: 10px;
+        font-size: 14px;
+        line-height: 30px;
+      }
+    }
+  }
+}
 .checkout-address {
   border: 1px solid #f5f5f5;
   display: flex;
@@ -134,28 +186,6 @@ export default {
       font-size: 14px;
       &:first-child {
         margin-right: 10px;
-      }
-    }
-  }
-}
-.xtx-dialog {
-  .text {
-    flex: 1;
-    min-height: 90px;
-    display: flex;
-    align-items: center;
-    &.item {
-      border: 1px solid #f5f5f5;
-      margin-bottom: 10px;
-      cursor: pointer;
-      &.active,&:hover {
-        border-color: @xtxColor;
-        background: lighten(@xtxColor,50%);
-      }
-      > ul {
-        padding: 10px;
-        font-size: 14px;
-        line-height: 30px;
       }
     }
   }

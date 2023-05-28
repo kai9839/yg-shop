@@ -3,7 +3,7 @@
     <div class="wrapper" :class="{fade}">
       <div class="header">
         <h3>{{title}}</h3>
-        <a href="JavaScript:;" class="iconfont icon-close-new"></a>
+        <a @click="close()" href="JavaScript:;" class="iconfont icon-close-new"></a>
       </div>
       <div class="body">
         <slot />
