@@ -15,24 +15,26 @@
     </div>
   </div>
   <XtxDialog title="切换收货地址" v-model:visible="dialogVisible" >
-    <div class="text item"
-      :class="{active:selectedAddress&&item.id===selectedAddress.id}"
-      @click="selectedAddress=item"
-      v-for="item in list"
-      :key="item.id">
-      <ul>
-        <li><span>收<i/>货<i/>人：</span>{{item.receiver}}</li>
-        <li><span>联系方式：</span>{{item.contact}}</li>
-        <li><span>收货地址：</span>{{item.fullLocation.replace(/ /g,'')+item.address}}</li>
-      </ul>
-      <a @click="showDelete(item.id)" href="JavaScript:;" class="iconfont icon-close-new"></a>
-      <XtxDialog title="删除地址信息" v-model:visible="deleteDialog">
-      是否删除地址信息？
-      <template v-slot:footer>
-        <XtxButton @click="deleteDialog=false" type="gray" style="margin-right:20px">取消</XtxButton>
-        <XtxButton @click="delAddress()" type="primary">确认</XtxButton>
-      </template>
-    </XtxDialog>
+    <div class="itemContent">
+      <div class="text item"
+        :class="{active:selectedAddress&&item.id===selectedAddress.id}"
+        @click="selectedAddress=item"
+        v-for="item in list"
+        :key="item.id">
+        <ul>
+          <li><span>收<i/>货<i/>人：</span>{{item.receiver}}</li>
+          <li><span>联系方式：</span>{{item.contact}}</li>
+          <li><span>收货地址：</span>{{item.fullLocation.replace(/ /g,'')+item.address}}</li>
+        </ul>
+        <a @click="showDelete(item.id)" href="JavaScript:;" class="iconfont icon-close-new"></a>
+        <XtxDialog title="删除地址信息" v-model:visible="deleteDialog">
+          是否删除地址信息？
+          <template v-slot:footer>
+            <XtxButton @click="deleteDialog=false" type="gray" style="margin-right:20px">取消</XtxButton>
+            <XtxButton @click="delAddress()" type="primary">确认</XtxButton>
+          </template>
+        </XtxDialog>
+      </div>
     </div>
     <!-- vue3.0 仅支持v-slot+template写法 -->
     <template v-slot:footer>
@@ -156,6 +158,11 @@ export default {
 </script>
 <style scoped lang="less">
 .xtx-dialog {
+  .itemContent {
+    /* 添加滚动条 */
+    max-height: 300px; /* 设置内容区域的最大高度，根据需要进行调整 */
+    overflow-y: auto; /* 允许垂直方向上的内容溢出时显示滚动条 */
+  }
   .text {
     flex: 1;
     min-height: 90px;
