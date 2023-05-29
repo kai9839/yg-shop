@@ -25,6 +25,14 @@
         <li><span>联系方式：</span>{{item.contact}}</li>
         <li><span>收货地址：</span>{{item.fullLocation.replace(/ /g,'')+item.address}}</li>
       </ul>
+      <a @click="showDelete(item.id)" href="JavaScript:;" class="iconfont icon-close-new"></a>
+      <XtxDialog title="删除地址信息" v-model:visible="deleteDialog">
+      是否删除地址信息？
+      <template v-slot:footer>
+        <XtxButton @click="deleteDialog=false" type="gray" style="margin-right:20px">取消</XtxButton>
+        <XtxButton @click="delAddress()" type="primary">确认</XtxButton>
+      </template>
+    </XtxDialog>
     </div>
     <!-- vue3.0 仅支持v-slot+template写法 -->
     <template v-slot:footer>
@@ -38,6 +46,8 @@
 <script>
 import { ref } from 'vue'
 import AddressEdit from './address-edit'
+import { deleteAddress } from '@/api/order'
+import Message from '@/components/library/Message'
 export default {
   name: 'CheckoutAddress',
   components: { AddressEdit },
@@ -55,6 +65,14 @@ export default {
   // 3. 提倡：你发了自定义事件，需要在emits选项申明下，代码可读性很高
   emits: ['change'],
   setup (props, { emit }) {
+    // 控制删除地址弹窗
+    const deleteDialog = ref(false)
+    // 要删除的地址id
+    let deleteId = ref(null)
+    const showDelete = (id) => {
+      deleteId = id
+      deleteDialog.value = true
+    }
     // 1. 找到默认收货地址
     // 2. 没有默认收货地址，使用第一条收货地址
     // 3. 如果没有数据，提示添加
@@ -93,6 +111,15 @@ export default {
       // 添加 {}  修改 {数据}
       addressEdit.value.open(address)
     }
+    // 删除
+    const delAddress = () => {
+      deleteAddress(deleteId).then(() => {
+        Message({ type: 'success', text: '删除成功' })
+        deleteDialog.value = false
+        emit('change', deleteId, 'del')
+        confirmAddress()
+      })
+    }
     // 成功
     const successHandler = (FormData) => {
       const editAddress = props.list.find(item => item.id === FormData.id)
@@ -119,7 +146,10 @@ export default {
       confirmAddress,
       addressEdit,
       openAddressEdit,
-      successHandler
+      successHandler,
+      delAddress,
+      deleteDialog,
+      showDelete
     }
   }
 }
@@ -135,6 +165,7 @@ export default {
       border: 1px solid #f5f5f5;
       margin-bottom: 10px;
       cursor: pointer;
+      position: relative;
       &.active,&:hover {
         border-color: @xtxColor;
         background: lighten(@xtxColor,50%);
@@ -143,6 +174,15 @@ export default {
         padding: 10px;
         font-size: 14px;
         line-height: 30px;
+      }
+      .iconfont {
+        position: absolute;
+        top: auto;
+        right: 45px;
+        text-align: center;
+        &:hover {
+          color: rgb(161, 157, 157);
+        }
       }
     }
   }

@@ -22,3 +22,11 @@ export const addAddress = (address) => {
 export const editAddress = (address) => {
   return request(`/member/address/${address.id}`, 'put', address)
 }
+
+/**
+ * 删除收货地址信息
+ * @param {Object} address - 地址对象
+ */
+export const deleteAddress = (id) => {
+  return request(`/member/address/${id}`, 'delete')
+}

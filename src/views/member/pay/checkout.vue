@@ -93,8 +93,14 @@ export default {
       addressId: null
     })
     // 切换地址
-    const changeAddress = (id) => {
-      requestParams.addressId = id
+    const changeAddress = (id, type) => {
+      if (type === 'del') {
+        findCheckoutInfo().then(data => {
+          checkoutInfo.value = data.result
+        })
+      } else {
+        requestParams.addressId = id
+      }
     }
     return { checkoutInfo, changeAddress }
   }
