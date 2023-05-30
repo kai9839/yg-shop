@@ -80,7 +80,7 @@ export default {
     // 3. 如果没有数据，提示添加
     const showAddress = ref(null)
     if (props.list.length) {
-      const defaultAddress = props.list.find(item => item.isDefault === 1)
+      const defaultAddress = props.list.find(item => item.isDefault === 0)
       if (defaultAddress) {
         showAddress.value = defaultAddress
       } else {
@@ -91,6 +91,8 @@ export default {
         }
       }
     }
+    // 默认通知父组件一个收货地址ID
+    emit('change', showAddress.value && showAddress.value.id)
     // 对话框显示隐藏
     const dialogVisible = ref(false)
     // 打开对话框

@@ -53,11 +53,11 @@
         </div>
         <!-- 支付方式 -->
          <h3 class="box-title">支付方式</h3>
-        <div class="box-body">
-          <a class="my-btn active" href="javascript:;">在线支付</a>
-          <a class="my-btn" href="javascript:;">货到付款</a>
-          <span style="color:#999">货到付款需付5元手续费</span>
-        </div>
+          <div class="box-body">
+            <a class="my-btn active" href="javascript:;">在线支付</a>
+            <a class="my-btn" href="javascript:;">货到付款</a>
+            <span style="color:#999">货到付款需付5元手续费</span>
+          </div>
         <!-- 金额明细 -->
         <h3 class="box-title">金额明细</h3>
         <div class="box-body">
@@ -70,7 +70,7 @@
         </div>
         <!-- 提交订单 -->
         <div class="submit">
-          <XtxButton type="primary">提交订单</XtxButton>
+          <XtxButton @click="submitOrder" type="primary">提交订单</XtxButton>
         </div>
       </div>
     </div>
@@ -78,8 +78,10 @@
 </template>
 <script>
 import CheckoutAddress from './components/checkout-address'
-import { findCheckoutInfo } from '@/api/order'
+import { findCheckoutInfo, createOrder } from '@/api/order'
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import Message from '@/components/library/Message'
 export default {
   name: 'XtxPayCheckoutPage',
   components: { CheckoutAddress },
@@ -87,10 +89,20 @@ export default {
     const checkoutInfo = ref(null)
     findCheckoutInfo().then(data => {
       checkoutInfo.value = data.result
+      // 设置提交时候的商品
+      requestParams.goods = checkoutInfo.value.goods.map(item => {
+        return {
+          skuId: item.skuId,
+          count: item.count
+        }
+      })
     })
     // 需要提交的字段
     const requestParams = reactive({
-      addressId: null
+      addressId: null,
+      payType: 1,
+      buyerMessage: '',
+      goods: []
     })
     // 切换地址
     const changeAddress = (id, type) => {
@@ -102,7 +114,15 @@ export default {
         requestParams.addressId = id
       }
     }
-    return { checkoutInfo, changeAddress }
+    // 提交订单
+    const router = useRouter()
+    const submitOrder = () => {
+      if (!requestParams.addressId) return Message({ text: '请选择收货地址' })
+      createOrder(requestParams).then(data => {
+        router.push({ path: '/member/pay', query: { id: data.result.id } })
+      })
+    }
+    return { checkoutInfo, changeAddress, submitOrder }
   }
 }
 </script>

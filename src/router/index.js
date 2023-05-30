@@ -28,6 +28,10 @@ const routes = [
     {
       path: '/member/checkout',
       component: () => import('@/views/member/pay/checkout')
+    },
+    {
+      path: '/member/pay',
+      component: () => import('@/views/member/pay/index')
     }
     ]
   },
