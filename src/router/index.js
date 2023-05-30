@@ -10,6 +10,16 @@ const routes = [
       component: () => import('@/views/home')
     },
     {
+      path: '/member',
+      component: () => import('@/views/member/Layout'),
+      children: [
+        {
+          path: '/member',
+          component: () => import('@/views/member/home')
+        }
+      ]
+    },
+    {
       path: '/category/:id',
       component: () => import('@/views/category/index.vue')
     },
