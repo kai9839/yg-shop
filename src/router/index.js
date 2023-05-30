@@ -1,62 +1,42 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import store from '@/store'
+import { h } from 'vue'
 
 const routes = [
   {
     path: '/',
     component: () => import('@/views/Layout.vue'),
-    children: [{
-      path: '/',
-      component: () => import('@/views/home')
-    },
-    {
-      path: '/member',
-      component: () => import('@/views/member/Layout'),
-      children: [
-        {
-          path: '/member',
-          component: () => import('@/views/member/home')
-        }
-      ]
-    },
-    {
-      path: '/category/:id',
-      component: () => import('@/views/category/index.vue')
-    },
-    {
-      path: '/category/sub/:id',
-      component: () => import('@/views/category/sub.vue')
-    },
-    {
-      path: '/product/:id',
-      component: () => import('@/views/goods/index')
-    },
-    {
-      path: '/cart',
-      component: () => import('@/views/cart/index')
-    },
-    {
-      path: '/member/checkout',
-      component: () => import('@/views/member/pay/checkout')
-    },
-    {
-      path: '/member/pay',
-      component: () => import('@/views/member/pay/index')
-    },
-    {
-      path: '/pay/callback',
-      component: () => import('@/views/member/pay/pay-result')
-    }
+    children: [{ path: '/', component: () => import('@/views/home') },
+      {
+        path: '/member',
+        component: () => import('@/views/member/Layout'),
+        children: [
+          {
+            path: '/member',
+            component: () => import('@/views/member/home'),
+            children: [{
+              path: '/member/order',
+              // 创建一个RouterView容器形成嵌套关系
+              component: { render: () => h(<RouterView />) },
+              children: [
+                { path: '', component: () => import('@/views/member/order') },
+                { path: ':id', component: () => import('@/views/member/order/detail') }
+              ]
+            }]
+          }
+        ]
+      },
+      { path: '/category/:id', component: () => import('@/views/category/index.vue') },
+      { path: '/category/sub/:id', component: () => import('@/views/category/sub.vue') },
+      { path: '/product/:id', component: () => import('@/views/goods/index') },
+      { path: '/cart', component: () => import('@/views/cart/index') },
+      { path: '/member/checkout', component: () => import('@/views/member/pay/checkout') },
+      { path: '/member/pay', component: () => import('@/views/member/pay/index') },
+      { path: '/pay/callback', component: () => import('@/views/member/pay/pay-result') }
     ]
   },
-  {
-    path: '/login',
-    component: () => import('@/views/login/index')
-  },
-  {
-    path: '/login/callback',
-    component: () => import('@/views/login/callback.vue')
-  }
+  { path: '/login', component: () => import('@/views/login/index') },
+  { path: '/login/callback', component: () => import('@/views/login/callback.vue') }
 ]
 
 // vue2.0 new VueRouter({}) 创建路由实例
