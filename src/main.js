@@ -7,5 +7,6 @@ import ui from './components/library'
 
 import 'normalize.css'
 import '@/assets/styles/common.less'
+import './mock'
 
 createApp(App).use(store).use(router).use(ui).mount('#app')
