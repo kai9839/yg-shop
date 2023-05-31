@@ -13,16 +13,16 @@ const routes = [
         children: [
           {
             path: '/member',
-            component: () => import('@/views/member/home'),
-            children: [{
-              path: '/member/order',
-              // 创建一个RouterView容器形成嵌套关系
-              component: { render: () => h(<RouterView />) },
-              children: [
-                { path: '', component: () => import('@/views/member/order') },
-                { path: ':id', component: () => import('@/views/member/order/detail') }
-              ]
-            }]
+            component: () => import('@/views/member/home')
+          },
+          {
+            path: '/member/order',
+            // 创建一个RouterView容器形成嵌套关系
+            component: { render: () => h(<RouterView />) },
+            children: [
+              { path: '', component: () => import('@/views/member/order') },
+              { path: ':id', component: () => import('@/views/member/order/detail') }
+            ]
           }
         ]
       },

@@ -1,6 +1,6 @@
 <template>
   <ul class="app-header-nav">
-    <li class="home"><RouterLink to="/">首页</RouterLink></li>
+    <li class="home"><RouterLink to="/" exact-active-class="active">首页</RouterLink></li>
     <li v-for="item in list" :key="item.id" @mousemove="show(item)" @mouseleave="hide(item)">
       <router-link active-class="active" @click="hide(item)" :to="`/category/${item.id}`">{{item.name}}</router-link>
       <div class="layer" :class="{open: item.open}">
@@ -64,6 +64,7 @@ export default {
     }
     .active {
       color: @xtxColor;
+      border-bottom: 1px solid @xtxColor;
     }
   }
 }
