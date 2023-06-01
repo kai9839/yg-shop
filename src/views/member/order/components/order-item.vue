@@ -9,7 +9,7 @@
         <b>付款截止：{{timeText}}</b>
       </span>
       <!-- 已完成 已取消 -->
-      <a v-if="[5,6].includes(order.orederState)" href="javascript:;" class="del">删除</a>
+      <a @click="$emit('on-delete', order)" v-if="[5,6].includes(order.orderState)" href="javascript:;" class="del">删除</a>
     </div>
     <div class="body">
       <div class="column goods">
@@ -70,7 +70,7 @@ export default {
     }
   },
   // 组件本身触发的自定义事件可以在这里申明
-  emits: ['on-cancel'],
+  emits: ['on-cancel', 'on-delete'],
   setup (props) {
     const { start, timeText } = usePayTime()
     start(props.order.countdown)

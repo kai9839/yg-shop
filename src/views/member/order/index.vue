@@ -14,7 +14,12 @@
     <div class="order-list">
       <div v-if="loading" class="loading"></div>
       <div class="none" v-if="!loading && orderList.length === 0">暂无数据</div>
-      <OrderItem @on-cancel="onCancelOrder" v-for="item in orderList" :key="item.id" :order="item" />
+      <OrderItem
+      @on-cancel="onCancelOrder"
+      @on-delete="onDeleteOrder"
+      v-for="item in orderList"
+      :key="item.id"
+      :order="item" />
     </div>
     <!-- 分页组件 -->
     <XtxPagination
@@ -31,10 +36,12 @@
 
 <script>
 import { reactive, ref, watch } from 'vue'
-import { findOrderList } from '@/api/order'
+import { deleteOrder, findOrderList } from '@/api/order'
 import OrderItem from './components/order-item'
 import OrderCancel from './components/order-cancel'
 import { orderStatus } from '@/api/constants'
+import Confirm from '@/components/library/Confirm'
+import Message from '@/components/library/Message'
 export default {
   components: { OrderItem, OrderCancel },
   name: 'MemberOrderPage',
@@ -62,18 +69,27 @@ export default {
     const total = ref(0)
     // 是否加载完成
     const loading = ref(true)
-    watch(requestParams, () => {
+    const findOrderListFn = () => {
       loading.value = true
       findOrderList(requestParams).then(data => {
         orderList.value = data.result.items
         total.value = data.result.counts
         loading.value = false
       })
+    }
+    // 使用侦听器，监听 requestParams 的改变
+    watch(requestParams, () => {
+      findOrderListFn()
     }, { immediate: true })
-    // 查询订单
-    findOrderList(requestParams).then(data => {
-      orderList.value = data.result.items
-    })
+    // 删除订单
+    const onDeleteOrder = (item) => {
+      Confirm({ text: '您确认删除该条订单吗？' }).then(() => {
+        deleteOrder([item.id]).then(() => {
+          Message({ text: '删除订单成功', type: 'success' })
+          findOrderListFn()
+        })
+      }).catch(e => {})
+    }
     return {
       activeName,
       clickTab,
@@ -82,6 +98,7 @@ export default {
       loading,
       total,
       requestParams,
+      onDeleteOrder,
       ...useCancelOrder()
     }
   }
