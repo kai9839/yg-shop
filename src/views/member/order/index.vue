@@ -1,7 +1,7 @@
 <template>
   <div class="ember-order-page">
     <!-- tab组件 -->
-    <XtxTabs v-model="activeName" @click-tab="clickTab">
+    <XtxTabs v-model="activeName" @tab-click="clickTab">
       <xtxTabsPanel
       v-for="item in orderStatus"
       :key="item.name"
@@ -11,105 +11,42 @@
       </xtxTabsPanel>
     </XtxTabs>
     <!-- 订单列表 -->
-    <div class="order-list">
-      <div class="order-item">
-        <div class="head">
-          <span>下单时间：2018-01-08 15:02:00</span>
-          <span>订单编号：62205697599</span>
-          <span class="down-time">
-            <i class="iconfont icon-down-time"></i>
-            <b>付款截止：28分20秒</b>
-          </span>
-        </div>
-        <div class="body">
-          <div class="column goods">
-            <ul>
-              <li v-for="i in 2" :key="i">
-                <a class="image" href="javascript:;">
-                  <img src="https://yanxuan-item.nosdn.127.net/f7a4f643e245d03771d6f12c94e71214.png" alt="" />
-                </a>
-                <div class="info">
-                  <p class="name ellipsis-2">原创设计一体化机身,精致迷你破壁机350mL</p>
-                  <p class="attr ellipsis">
-                    <span>颜色：绿色</span>
-                    <span>尺寸：10寸</span>
-                  </p>
-                </div>
-                <div class="price">¥9.50</div>
-                <div class="count">x1</div>
-              </li>
-            </ul>
-          </div>
-          <div class="column state">
-            <p>待付款</p>
-          </div>
-          <div class="column amount">
-            <p class="red">¥19.00</p>
-            <p>（含运费：¥10.00）</p>
-            <p>在线支付</p>
-          </div>
-          <div class="column action">
-            <XtxButton type="primary" size="small">立即付款</XtxButton>
-            <p><a href="javascript:;">查看详情</a></p>
-            <p><a href="javascript:;">取消订单</a></p>
-          </div>
-        </div>
-      </div>
-      <div class="order-item">
-        <div class="head">
-          <span>下单时间：2018-01-08 15:02:00</span>
-          <span>订单编号：62205697599</span>
-          <a href="javascript:;" class="del">删除</a>
-        </div>
-        <div class="body">
-          <div class="column goods">
-            <ul>
-              <li>
-                <a class="image" href="javascript:;">
-                  <img src="https://yanxuan-item.nosdn.127.net/f7a4f643e245d03771d6f12c94e71214.png" alt="" />
-                </a>
-                <div class="info">
-                  <p class="name ellipsis-2">原创设计一体化机身,精致迷你破壁机350mL</p>
-                  <p class="attr ellipsis">
-                    <span>颜色：绿色</span>
-                    <span>尺寸：10寸</span>
-                  </p>
-                </div>
-                <div class="price">¥9.50</div>
-                <div class="count">x1</div>
-              </li>
-            </ul>
-          </div>
-          <div class="column state">
-            <p>已取消</p>
-          </div>
-          <div class="column amount">
-            <p class="red">¥9.50</p>
-            <p>（含运费：¥0.00）</p>
-          </div>
-          <div class="column action">
-            <p><a href="javascript:;">查看详情</a></p>
-          </div>
-        </div>
-      </div>
+    <div class="order-list" v-if="orderList">
+      <OrderItem v-for="item in orderList" :key="item.id" :order="item" />
     </div>
+    <div v-else class="loading"></div>
     <!-- 分页组件 -->
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
-import xtxTabsPanel from '@/components/library/xtx-tabs-panel.vue'
+import { reactive, ref } from 'vue'
+import { findOrderList } from '@/api/order'
+import OrderItem from './components/order-item'
 import { orderStatus } from '@/api/constants'
 export default {
-  components: { xtxTabsPanel },
+  components: { OrderItem },
   name: 'MemberOrderPage',
   setup () {
+    // 默认为全部订单
     const activeName = ref('all')
+    // 点击选项卡
     const clickTab = (name) => {
       console.log(name)
     }
-    return { activeName, clickTab, orderStatus }
+    // 查询订单参数
+    const requestParams = reactive({
+      page: 1,
+      pageSize: 5,
+      orderState: 0
+    })
+    // 订单列表
+    const orderList = ref([])
+    // 查询订单
+    findOrderList(requestParams).then(data => {
+      orderList.value = data.result.items
+    })
+    return { activeName, clickTab, orderStatus, orderList }
   }
 }
 
