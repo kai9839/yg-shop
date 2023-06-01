@@ -11,16 +11,24 @@
       </xtxTabsPanel>
     </XtxTabs>
     <!-- 订单列表 -->
-    <div class="order-list" v-if="orderList">
+    <div class="order-list">
+      <div v-if="loading" class="loading"></div>
+      <div class="none" v-if="!loading && orderList.length === 0">暂无数据</div>
       <OrderItem v-for="item in orderList" :key="item.id" :order="item" />
     </div>
-    <div v-else class="loading"></div>
     <!-- 分页组件 -->
+    <XtxPagination
+    v-if="total > 0"
+    @current-change="requestParams.page=$event"
+    :total="total"
+    :page-size="requestParams.pageSize"
+    :current-page="requestParams.page"
+    />
   </div>
 </template>
 
 <script>
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { findOrderList } from '@/api/order'
 import OrderItem from './components/order-item'
 import { orderStatus } from '@/api/constants'
@@ -30,31 +38,76 @@ export default {
   setup () {
     // 默认为全部订单
     const activeName = ref('all')
-    // 点击选项卡
-    const clickTab = (name) => {
-      console.log(name)
-    }
+
     // 查询订单参数
     const requestParams = reactive({
       page: 1,
       pageSize: 5,
       orderState: 0
     })
+
+    // 点击选项卡
+    const clickTab = (tab) => {
+      // 此时：tab.index 就是订单的状态
+      requestParams.orderState = tab.index
+      requestParams.page = 1
+    }
+
     // 订单列表
     const orderList = ref([])
+    // 总页数
+    const total = ref(0)
+    // 是否加载完成
+    const loading = ref(true)
+    watch(requestParams, () => {
+      loading.value = true
+      findOrderList(requestParams).then(data => {
+        orderList.value = data.result.items
+        total.value = data.result.counts
+        loading.value = false
+      })
+    }, { immediate: true })
     // 查询订单
     findOrderList(requestParams).then(data => {
       orderList.value = data.result.items
     })
-    return { activeName, clickTab, orderStatus, orderList }
+    return {
+      activeName,
+      clickTab,
+      orderStatus,
+      orderList,
+      loading,
+      total,
+      requestParams
+    }
   }
 }
 
 </script>
 <style  lang="less" scoped>
+.ember-order-page {
+  height: 100%;
+  background: #fff;
+}
 .order-list {
   background: #fff;
   padding: 20px;
+  position: relative;
+  min-height: 400px;
+}
+.loading {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: rgba(255,255,255,.9) url(../../../assets/images/loading.gif) no-repeat center;
+}
+.none {
+  height: 400px;
+  text-align: center;
+  line-height: 400px;
+  color: #999;
 }
 .order-item {
   margin-bottom: 20px;
