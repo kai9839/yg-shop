@@ -27,13 +27,6 @@
           <li><span>收货地址：</span>{{item.fullLocation.replace(/ /g,'')+item.address}}</li>
         </ul>
         <a @click="showDelete(item.id)" href="JavaScript:;" class="iconfont icon-close-new"></a>
-        <XtxDialog title="删除地址信息" v-model:visible="deleteDialog">
-          是否删除地址信息？
-          <template v-slot:footer>
-            <XtxButton @click="deleteDialog=false" type="gray" style="margin-right:20px">取消</XtxButton>
-            <XtxButton @click="delAddress()" type="primary">确认</XtxButton>
-          </template>
-        </XtxDialog>
       </div>
     </div>
     <!-- vue3.0 仅支持v-slot+template写法 -->
@@ -44,6 +37,14 @@
   </XtxDialog>
   <!-- 收货地址添加编辑组件 -->
   <AddressEdit @on-success="successHandler" ref="addressEdit" />
+  <!-- 是否删除地址弹窗 -->
+  <XtxDialog title="删除地址信息" v-model:visible="deleteDialog">
+    是否删除地址信息？
+    <template v-slot:footer>
+      <XtxButton @click="deleteDialog=false" type="gray" style="margin-right:20px">取消</XtxButton>
+      <XtxButton @click="delAddress()" type="primary">确认</XtxButton>
+    </template>
+  </XtxDialog>
 </template>
 <script>
 import { ref } from 'vue'

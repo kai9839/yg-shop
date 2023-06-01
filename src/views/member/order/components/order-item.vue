@@ -15,12 +15,12 @@
       <div class="column goods">
         <ul>
           <li v-for="goods in order.skus" :key="goods.id">
-            <a class="image" href="javascript:;">
+            <a @click="$router.push(`/member/order/${order.id}`)" class="image" href="javascript:;">
               <img :src="goods.image" alt="" />
             </a>
             <div class="info">
-              <p class="name ellipsis-2">{{goods.name}}</p>
-              <p class="attr ellipsis">{{goods.attrsText}}</p>
+              <p @click="$router.push(`/member/order/${order.id}`)" class="name ellipsis-2">{{goods.name}}</p>
+              <p @click="$router.push(`/member/order/${order.id}`)" class="attr ellipsis">{{goods.attrsText}}</p>
             </div>
             <div class="price">¥{{goods.realPay}}</div>
             <div class="count">x{{goods.quantity}}</div>
@@ -52,7 +52,7 @@
         <XtxButton v-if="order.orderState===3" type="primary" size="small">确认收货</XtxButton>
         <p><a @click="$router.push(`/member/order/${order.id}`)" href="javascript:;">查看详情</a></p>
         <p @click="$emit('on-cancel', order)" v-if="order.orderState===1"><a href="javascript:;">取消订单</a></p>
-        <p v-if="[2,3,4,5].includes(order.orderState)"><a href="javascript:;">再次购买</a></p>
+        <p @click="$router.push(`/product/${order.skus[0].spuId}`)" v-if="[2,3,4,5].includes(order.orderState)"><a href="javascript:;">再次购买</a></p>
         <p v-if="[4,5].includes(order.orderState)"><a href="javascript:;">申请售后</a></p>
       </div>
     </div>
@@ -145,6 +145,9 @@ export default {
               padding: 0 10px;
               p {
                 margin-bottom: 5px;
+                &:hover {
+                  cursor: pointer;
+                }
                 &.name {
                   height: 38px;
                 }
