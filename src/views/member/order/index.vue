@@ -18,6 +18,7 @@
       @on-cancel="onCancelOrder"
       @on-delete="onDeleteOrder"
       @on-confirm="onConfirmOrder"
+      @on-logistics="onLogisticsOrder"
       v-for="item in orderList"
       :key="item.id"
       :order="item" />
@@ -32,6 +33,8 @@
     />
     <!-- 取消原因组件 -->
     <OrderCancel ref="orderCancelCom" />
+    <!-- 查看物流组件 -->
+    <OrderLogistics ref="logisticsOrderCom" />
   </div>
 </template>
 
@@ -40,11 +43,12 @@ import { reactive, ref, watch } from 'vue'
 import { confirmOrder, deleteOrder, findOrderList } from '@/api/order'
 import OrderItem from './components/order-item'
 import OrderCancel from './components/order-cancel'
+import OrderLogistics from './components/order-logistics'
 import { orderStatus } from '@/api/constants'
 import Confirm from '@/components/library/Confirm'
 import Message from '@/components/library/Message'
 export default {
-  components: { OrderItem, OrderCancel },
+  components: { OrderItem, OrderCancel, OrderLogistics },
   name: 'MemberOrderPage',
   setup () {
     // 默认为全部订单
@@ -101,7 +105,8 @@ export default {
       requestParams,
       onDeleteOrder,
       ...useCancelOrder(),
-      ...useConfirmOrder()
+      ...useConfirmOrder(),
+      ...useLogisticsOrder()
     }
   }
 }
@@ -128,6 +133,14 @@ const useConfirmOrder = () => {
     }).catch(e => { })
   }
   return { onConfirmOrder }
+}
+// 封装逻辑-查看物流
+const useLogisticsOrder = () => {
+  const logisticsOrderCom = ref(null)
+  const onLogisticsOrder = (item) => {
+    logisticsOrderCom.value.open(item)
+  }
+  return { onLogisticsOrder, logisticsOrderCom }
 }
 
 </script>

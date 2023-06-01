@@ -32,7 +32,7 @@
         <!-- 待收货：查看物流 -->
         <!-- 待评价：评价商品 -->
         <!-- 已完成：查看评价 -->
-        <p v-if="order.orderState===3"><a href="javascript:;" class="green">查看物流</a></p>
+        <p @click="$emit('on-logistics', order)" v-if="order.orderState===3"><a href="javascript:;" class="green">查看物流</a></p>
         <p v-if="order.orderState===4"><a href="javascript:;" class="green">评价商品</a></p>
         <p v-if="order.orderState===5"><a href="javascript:;" class="green">查看评价</a></p>
       </div>
@@ -70,7 +70,7 @@ export default {
     }
   },
   // 组件本身触发的自定义事件可以在这里申明
-  emits: ['on-cancel', 'on-delete', 'on-confirm'],
+  emits: ['on-cancel', 'on-delete', 'on-confirm', 'on-logistics'],
   setup (props) {
     const { start, timeText } = usePayTime()
     start(props.order.countdown)
