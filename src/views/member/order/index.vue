@@ -14,7 +14,7 @@
     <div class="order-list">
       <div v-if="loading" class="loading"></div>
       <div class="none" v-if="!loading && orderList.length === 0">暂无数据</div>
-      <OrderItem v-for="item in orderList" :key="item.id" :order="item" />
+      <OrderItem @on-cancel="onCancelOrder" v-for="item in orderList" :key="item.id" :order="item" />
     </div>
     <!-- 分页组件 -->
     <XtxPagination
@@ -24,6 +24,8 @@
     :page-size="requestParams.pageSize"
     :current-page="requestParams.page"
     />
+    <!-- 取消原因组件 -->
+    <OrderCancel ref="orderCancelCom" />
   </div>
 </template>
 
@@ -31,9 +33,10 @@
 import { reactive, ref, watch } from 'vue'
 import { findOrderList } from '@/api/order'
 import OrderItem from './components/order-item'
+import OrderCancel from './components/order-cancel'
 import { orderStatus } from '@/api/constants'
 export default {
-  components: { OrderItem },
+  components: { OrderItem, OrderCancel },
   name: 'MemberOrderPage',
   setup () {
     // 默认为全部订单
@@ -78,9 +81,20 @@ export default {
       orderList,
       loading,
       total,
-      requestParams
+      requestParams,
+      ...useCancelOrder()
     }
   }
+}
+
+// 封装逻辑-取消订单
+const useCancelOrder = () => {
+  const orderCancelCom = ref(null)
+  const onCancelOrder = (order) => {
+    // item 就是你要取消的订单
+    orderCancelCom.value.open(order)
+  }
+  return { onCancelOrder, orderCancelCom }
 }
 
 </script>
