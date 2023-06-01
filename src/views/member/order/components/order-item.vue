@@ -49,7 +49,7 @@
         <!-- 已完成：查看详情，再次购买，申请售后 -->
         <!-- 已取消：查看详情 -->
         <XtxButton @click="$router.push(`/member/pay?id=${order.id}`)" v-if="order.orderState===1" type="primary" size="small">立即付款</XtxButton>
-        <XtxButton v-if="order.orderState===3" type="primary" size="small">确认收货</XtxButton>
+        <XtxButton @click="$emit('on-confirm', order)" v-if="order.orderState===3" type="primary" size="small">确认收货</XtxButton>
         <p><a @click="$router.push(`/member/order/${order.id}`)" href="javascript:;">查看详情</a></p>
         <p @click="$emit('on-cancel', order)" v-if="order.orderState===1"><a href="javascript:;">取消订单</a></p>
         <p @click="$router.push(`/product/${order.skus[0].spuId}`)" v-if="[2,3,4,5].includes(order.orderState)"><a href="javascript:;">再次购买</a></p>
@@ -70,7 +70,7 @@ export default {
     }
   },
   // 组件本身触发的自定义事件可以在这里申明
-  emits: ['on-cancel', 'on-delete'],
+  emits: ['on-cancel', 'on-delete', 'on-confirm'],
   setup (props) {
     const { start, timeText } = usePayTime()
     start(props.order.countdown)
