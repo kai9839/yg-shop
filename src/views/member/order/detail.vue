@@ -5,6 +5,16 @@
     <!-- 步骤条 组件xtx-steps.vue-->
     <DetailSteps :order="order" />
     <!-- 物流栏 -->
+    <Suspense v-if="[3,4,5].includes(order.orderState)">
+      <!-- 组件加载完毕 -->
+      <template #default>
+        <DetailLogistics :order="order" />
+      </template>
+      <!-- 组件加载中显示 -->
+      <template #fallback>
+        <div class="loading">loading</div>
+      </template>
+    </Suspense>
     <!-- 订单商品信息 -->
   </div>
 </template>
@@ -13,10 +23,11 @@ import { findOrder } from '@/api/order'
 import { useRoute } from 'vue-router'
 import DetailAction from './components/detail-action'
 import DetailSteps from './components/detail-steps'
+import DetailLogistics from './components/detail-logistics'
 import { ref } from 'vue'
 export default {
   name: 'OrderDetailPage',
-  components: { DetailAction, DetailSteps },
+  components: { DetailAction, DetailSteps, DetailLogistics },
   setup () {
     const order = ref(null)
     const route = useRoute()
@@ -31,5 +42,13 @@ export default {
 .order-detail-page {
   height: 100%;
   background: #fff;
+}
+.loading {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 30px;
+  background-color: #f5f5f5;
+  margin: 30px 50px 0;
 }
 </style>
