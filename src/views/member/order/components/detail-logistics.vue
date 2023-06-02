@@ -4,14 +4,20 @@
       <span>{{list[0].text}}</span>
       <span>{{list[0].time}}</span>
     </p>
-    <a href="javascript:;">查看物流</a>
+    <a @click="onLogisticsOrder(order)" href="javascript:;">查看物流</a>
   </div>
+  <Teleport to="#dailog">
+    <OrderLogistics ref="logisticsOrderCom" />
+  </Teleport>
 </template>
 <script>
 import { logisticsOrder } from '@/api/order'
+import OrderLogistics from './order-logistics'
+import { useLogisticsOrder } from '../index.vue'
 import { ref } from 'vue'
 export default {
   name: 'DetailLogistics',
+  components: { OrderLogistics },
   props: {
     order: {
       type: Object,
@@ -22,7 +28,7 @@ export default {
   async setup (props) {
     const data = await logisticsOrder(props.order.id)
     const list = ref(data.result.list)
-    return { list }
+    return { list, ...useLogisticsOrder() }
   }
 }
 </script>

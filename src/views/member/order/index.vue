@@ -112,7 +112,7 @@ export default {
 }
 
 // 封装逻辑-取消订单
-const useCancelOrder = () => {
+export const useCancelOrder = () => {
   const orderCancelCom = ref(null)
   const onCancelOrder = (order) => {
     // item 就是你要取消的订单
@@ -121,7 +121,7 @@ const useCancelOrder = () => {
   return { onCancelOrder, orderCancelCom }
 }
 // 封装逻辑-确认收货
-const useConfirmOrder = () => {
+export const useConfirmOrder = () => {
   const onConfirmOrder = (item) => {
     // item 就是你要确认收货的订单
     Confirm({ text: '您确认收到货吗？确认后货款将会打给卖家。' }).then(() => {
@@ -135,7 +135,7 @@ const useConfirmOrder = () => {
   return { onConfirmOrder }
 }
 // 封装逻辑-查看物流
-const useLogisticsOrder = () => {
+export const useLogisticsOrder = () => {
   const logisticsOrderCom = ref(null)
   const onLogisticsOrder = (item) => {
     logisticsOrderCom.value.open(item)

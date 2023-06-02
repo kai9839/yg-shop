@@ -47,7 +47,6 @@ export default {
     const submit = () => {
       // 1. 根据订单ID和取消原因发请求
       if (!curText.value) return Message({ text: '请选择取消订单的原因' })
-      console.log(order.value)
       cancelOrder(order.value.id, curText.value).then(() => {
         // 取消订单成功
         Message({ text: '取消订单成功', type: 'success' })
