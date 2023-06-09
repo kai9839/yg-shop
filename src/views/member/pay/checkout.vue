@@ -78,25 +78,31 @@
 </template>
 <script>
 import CheckoutAddress from './components/checkout-address'
-import { findCheckoutInfo, createOrder } from '@/api/order'
+import { findCheckoutInfo, createOrder, findOrderRepurchase } from '@/api/order'
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import Message from '@/components/library/Message'
 export default {
   name: 'XtxPayCheckoutPage',
   components: { CheckoutAddress },
   setup () {
     const checkoutInfo = ref(null)
-    findCheckoutInfo().then(data => {
-      checkoutInfo.value = data.result
-      // 设置提交时候的商品
-      requestParams.goods = checkoutInfo.value.goods.map(item => {
-        return {
-          skuId: item.skuId,
-          count: item.count
-        }
+    const route = useRoute()
+    if (route.query.orderId) {
+      // 再次购买结算
+      findOrderRepurchase(route.query.orderId).then(data => {
+        checkoutInfo.value = data.result
+        // 设置订单商品数据
+        requestParams.goods = data.result.goods.map(({ skuId, count }) => ({ skuId, count }))
       })
-    })
+    } else {
+      // 购物车结算
+      findCheckoutInfo().then(data => {
+        checkoutInfo.value = data.result
+        // 设置订单商品数据
+        requestParams.goods = data.result.goods.map(({ skuId, count }) => ({ skuId, count }))
+      })
+    }
     // 需要提交的字段
     const requestParams = reactive({
       addressId: null,
