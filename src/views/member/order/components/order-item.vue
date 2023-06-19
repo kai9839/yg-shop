@@ -74,6 +74,7 @@ export default {
   setup (props) {
     const { start, timeText } = usePayTime()
     start(props.order.countdown)
+
     return { orderStatus, timeText }
   }
 }
@@ -145,9 +146,6 @@ export default {
               padding: 0 10px;
               p {
                 margin-bottom: 5px;
-                &:hover {
-                  cursor: pointer;
-                }
                 &.name {
                   height: 38px;
                 }
