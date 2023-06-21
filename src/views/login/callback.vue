@@ -9,11 +9,11 @@
     <nav class="tab">
       <a @click="hasAccount=true" :class="{active:hasAccount}" href="javascript:;">
         <i class="iconfont icon-bind" />
-        <span>已有小兔鲜账号，请绑定手机</span>
+        <span>已有YgShop账号，请绑定手机</span>
       </a>
       <a @click="hasAccount=false" :class="{active:!hasAccount}" href="javascript:;">
         <i class="iconfont icon-edit" />
-        <span>没有小兔鲜账号，请完善资料</span>
+        <span>没有YgShop账号，请完善资料</span>
       </a>
     </nav>
     <div class="tab-content" v-if="hasAccount">
@@ -54,7 +54,7 @@ export default {
       // 第三方唯一标识QQ唯一标识
       QC.Login.getMe((openId) => {
         unionId.value = openId
-        // 请求小兔鲜后台，做QQ登录
+        // 请求YgShop后台，做QQ登录
         userQQLogin(openId).then(data => {
           // 登录成功：data.result 用户信息
           // 1. 存储用户信息
@@ -68,7 +68,7 @@ export default {
             Message({ type: 'success', text: 'QQ登录成功' })
           })
         }).catch(e => {
-          // 代表：使用qq登录失败===>1. 没绑定小兔鲜帐号  2. 没有小兔鲜帐号
+          // 代表：使用qq登录失败===>1. 没绑定YgShop帐号  2. 没有YgShop帐号
           isBind.value = false
         })
       })

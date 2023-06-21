@@ -11,7 +11,7 @@
         <!-- 二维码 -->
         <div v-if="activeName==='qrcode'" class="qrcode-box">
           <img src="@/assets/images/qrcode.jpg" alt="">
-        <p>打开 <a href="javascript:;">小兔鲜App</a> 扫码登录</p>
+        <p>打开 <a href="javascript:;">YgShopApp</a> 扫码登录</p>
         </div>
       </div>
     </section>

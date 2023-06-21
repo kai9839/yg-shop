@@ -2,7 +2,7 @@
   <Form ref="formCom" :validation-schema="mySchema" v-slot="{errors}" autocomplete="off" class="xtx-form">
     <div class="user-info">
       <img :src="avatar" alt="" />
-      <p>Hi，{{nickname}} 欢迎来小兔鲜，完成绑定后可以QQ账号一键登录哦~</p>
+      <p>Hi，{{nickname}} 欢迎来YgShop，完成绑定后可以QQ账号一键登录哦~</p>
     </div>
     <div class="xtx-form-item">
       <div class="field">
